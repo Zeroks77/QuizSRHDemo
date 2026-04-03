@@ -229,7 +229,7 @@ function startGame(quizId) {
 }
 
 function showStartModal(code) {
-  const url  = `${location.origin}${location.pathname.replace('admin.html', '')}play.html?code=${code}`;
+  const url  = getPlayerJoinUrl(code);
   const modal = document.getElementById('modal-start');
   modal.classList.remove('hidden');
   document.getElementById('modal-game-code').textContent = code;
@@ -240,6 +240,11 @@ function showStartModal(code) {
 
 function closeStartModal() {
   document.getElementById('modal-start').classList.add('hidden');
+}
+
+function getPlayerJoinUrl(code = currentGame?.code) {
+  if (!code) return `${location.origin}${location.pathname.replace('admin.html', '')}play.html`;
+  return `${location.origin}${location.pathname.replace('admin.html', '')}play.html?code=${code}`;
 }
 
 function handleChannelMessage(msg) {

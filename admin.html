@@ -226,12 +226,24 @@
       Teile den QR-Code oder den Spielcode mit deinen Mitspielern.
       Spieler öffnen <strong>play.html</strong> und geben den Code ein.
     </p>
+    <p class="text-muted text-sm mb-2">
+      Für die Demo auf demselben Gerät: Öffne die Spieler-Ansicht in einem neuen Tab und trage dort einen Namen ein.
+    </p>
 
     <div class="qr-container mb-2">
       <div id="modal-qr"></div>
       <div class="game-code-label">Spielcode</div>
       <div class="game-code-display" id="modal-game-code">––––––</div>
       <p class="modal-play-url" id="modal-play-url"></p>
+    </div>
+
+    <div class="flex flex-col gap-1 mb-2">
+      <button class="btn btn-secondary w-full" onclick="openPlayerView()">
+        ▶ Spieler-Ansicht auf diesem Gerät öffnen
+      </button>
+      <button class="btn btn-ghost w-full" onclick="copyPlayerLink()">
+        🔗 Link kopieren
+      </button>
     </div>
 
     <button class="btn btn-primary w-full" onclick="closeStartModal()">
@@ -275,6 +287,22 @@ function saveAndStart() {
   }
   QuizStore.upsert(currentQuiz);
   startGame(currentQuiz.id);
+}
+
+function openPlayerView() {
+  window.open(getPlayerJoinUrl(), '_blank', 'noopener');
+}
+
+async function copyPlayerLink() {
+  const url = getPlayerJoinUrl();
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(url);
+      toast('Spieler-Link kopiert ✓', 'success');
+      return;
+    }
+  } catch (_) {}
+  window.prompt('Spieler-Link kopieren:', url);
 }
 
 // Demo quiz

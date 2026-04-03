@@ -24,8 +24,9 @@ Eine moderne statische Web-App für interaktive Quizze — mit Admin-Ansicht und
 2. Erstelle ein neues Quiz oder lade das Demo-Quiz
 3. Füge Fragen und Antworten hinzu, markiere die richtige Antwort
 4. Klicke auf **▶ Starten** – du erhältst einen Spielcode und QR-Code
-5. Teile den Code/QR mit Mitspielern
-6. Klicke **Nächste Frage** um das Quiz zu steuern
+5. Für die Demo auf demselben Gerät: öffne die Spieler-Ansicht direkt in einem neuen Tab
+6. Teile alternativ den Code/QR mit Mitspielern
+7. Klicke **Nächste Frage** um das Quiz zu steuern
 
 ### Spieler
 1. Öffne `play.html` (oder scanne den QR-Code)
@@ -59,6 +60,10 @@ Im Host-Modus kannst du das Glücksrad öffnen (`🎡 Glücksrad`-Button), um ei
     └── wheel.js     – Glücksrad-Komponente
 ```
 
+## 🌍 Deployment
+
+Das Repository enthält einen GitHub-Pages-Workflow. Bei einem Push auf `main` wird die statische Seite automatisch nach GitHub Pages deployed.
+
 ## ℹ️ Hinweis
 
-Da dies eine reine statische App (ohne Backend) ist, funktioniert die Echtzeit-Synchronisierung zwischen Admin und Spielern am besten im **gleichen Browser** (verschiedene Tabs). Für echten Multiplayer-Betrieb wäre ein Backend (z.B. WebSockets) erforderlich.
+Da dies eine reine statische App (ohne Backend) ist, funktioniert die Demo am zuverlässigsten im **gleichen Browser** auf **demselben Gerät** (verschiedene Tabs). Für echten Multiplayer-Betrieb über mehrere Geräte wäre ein Backend (z.B. WebSockets) erforderlich.
