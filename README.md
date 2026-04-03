@@ -59,6 +59,10 @@ Im Host-Modus kannst du das Glücksrad öffnen (`🎡 Glücksrad`-Button), um ei
     └── wheel.js     – Glücksrad-Komponente
 ```
 
+## 🌍 Deployment
+
+Das Repository enthält einen GitHub-Pages-Workflow. Bei einem Push auf `main` wird die statische Seite automatisch nach GitHub Pages deployed.
+
 ## ℹ️ Hinweis
 
 Da dies eine reine statische App (ohne Backend) ist, funktioniert die Echtzeit-Synchronisierung zwischen Admin und Spielern am besten im **gleichen Browser** (verschiedene Tabs). Für echten Multiplayer-Betrieb wäre ein Backend (z.B. WebSockets) erforderlich.
