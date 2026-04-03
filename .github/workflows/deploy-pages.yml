@@ -31,7 +31,7 @@ jobs:
       - name: Prepare site
         run: |
           mkdir -p _site
-          cp .nojekyll admin.html index.html play.html _site/
+          cp admin.html index.html play.html _site/
           cp -R css js _site/
 
       - name: Upload artifact
