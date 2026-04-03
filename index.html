@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QuizSAH – Interaktives Quiz</title>
+  <title>SRH Quiz – Messemodus</title>
   <link rel="stylesheet" href="css/style.css" />
   <style>
     .pulse-ring {
       position: absolute;
       border-radius: 50%;
       animation: ringOut 2s ease-out infinite;
-      border: 2px solid rgba(124,58,237,.4);
+      border: 2px solid rgba(156,190,217,.4);
     }
     @keyframes ringOut {
       0%   { transform: scale(1); opacity: .6; }
@@ -27,12 +27,14 @@
     .hero-visual .pulse-ring:nth-child(3) { width:100%;height:100%;animation-delay:1.2s; }
     .hero-logo-icon {
       position: relative; z-index: 2;
-      width: 80px; height: 80px;
+      width: 84px; height: 84px;
       background: var(--grad-primary);
       border-radius: 28px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 2.5rem;
-      box-shadow: 0 8px 40px rgba(124,58,237,.5);
+      font-size: 1.7rem;
+      font-weight: 900;
+      color: #fff;
+      box-shadow: 0 8px 40px rgba(0,105,153,.35);
     }
     .scroll-hint {
       position: absolute;
@@ -51,20 +53,9 @@
       0%,100% { transform: translateX(-50%) translateY(0); }
       50%      { transform: translateX(-50%) translateY(8px); }
     }
-    .how-it-works {
-      padding: 4rem 1rem;
-      position: relative; z-index: 1;
-    }
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.5rem;
-      margin-top: 2rem;
-    }
-    .step {
-      text-align: center;
-      padding: 2rem 1.5rem;
-    }
+    .how-it-works { padding: 4rem 1rem; position: relative; z-index: 1; }
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+    .step { text-align: center; padding: 2rem 1.5rem; }
     .step-num {
       width: 3rem; height: 3rem;
       background: var(--grad-primary);
@@ -72,20 +63,13 @@
       display: flex; align-items: center; justify-content: center;
       font-weight: 900; font-size: 1.2rem;
       margin: 0 auto 1rem;
+      color: #fff;
     }
     .step h3 { font-size: 1.05rem; margin-bottom: .4rem; }
     .step p  { font-size: .875rem; color: var(--muted); }
-    .cta-section {
-      text-align: center;
-      padding: 4rem 1rem 6rem;
-      position: relative; z-index: 1;
-    }
-    .cta-section h2 {
-      font-size: clamp(1.8rem, 5vw, 3rem);
-      font-weight: 900;
-      margin-bottom: 1rem;
-    }
-    .cta-section p { color: var(--muted); margin-bottom: 2rem; max-width: 480px; margin-left:auto;margin-right:auto; }
+    .cta-section { text-align: center; padding: 4rem 1rem 6rem; position: relative; z-index: 1; }
+    .cta-section h2 { font-size: clamp(1.8rem, 5vw, 3rem); font-weight: 900; margin-bottom: 1rem; }
+    .cta-section p { color: var(--muted); margin-bottom: 2rem; max-width: 520px; margin-left:auto;margin-right:auto; }
     footer {
       border-top: 1px solid var(--glass-border);
       text-align: center;
@@ -97,42 +81,37 @@
   </style>
 </head>
 <body>
-
-<!-- Starfield -->
 <div class="stars-bg" id="stars"></div>
 
-<!-- Navbar -->
 <nav class="navbar">
-  <span class="logo">⚡ QuizSAH</span>
+  <span class="logo">SRH Quiz</span>
   <div class="nav-links">
-    <a href="admin.html" class="btn btn-ghost btn-sm">🛠 Admin</a>
-    <a href="play.html"  class="btn btn-primary btn-sm">▶ Mitspielen</a>
+    <a href="admin.html" class="btn btn-ghost btn-sm">Admin</a>
+    <a href="play.html" class="btn btn-primary btn-sm">Mitspielen</a>
   </div>
 </nav>
 
-<!-- Hero -->
 <section class="hero-section">
   <div class="hero-visual">
     <div class="pulse-ring"></div>
     <div class="pulse-ring"></div>
     <div class="pulse-ring"></div>
-    <div class="hero-logo-icon">⚡</div>
+    <div class="hero-logo-icon">SRH</div>
   </div>
 
-  <div class="hero-badge">🎉 Interaktiv · Mobil-optimiert · Kostenlos</div>
+  <div class="hero-badge">SRH Branding · Einzelmodus · Für Messen optimiert</div>
 
   <h1 class="hero-title">
-    Dein Quiz.<br><span class="accent">Unvergesslich.</span>
+    Das SRH Quiz für den<br><span class="accent">Messestand.</span>
   </h1>
 
   <p class="hero-sub">
-    Erstelle spannende Quizze mit Animationen, Glücksrad und QR-Code-Beitritt —
-    perfekt für Tablets und Smartphones.
+    Admin bereitet Fragen vor, Besucher:innen spielen direkt auf dem Gerät und danach kann der Lauf sofort neu gestartet werden.
   </p>
 
   <div class="hero-cta">
-    <a href="admin.html" class="btn btn-primary btn-lg">🛠 Quiz erstellen</a>
-    <a href="play.html"  class="btn btn-ghost btn-lg">▶ Quiz spielen</a>
+    <a href="admin.html" class="btn btn-primary btn-lg">Quiz vorbereiten</a>
+    <a href="play.html" class="btn btn-ghost btn-lg">Spieleransicht</a>
   </div>
 
   <div class="scroll-hint">
@@ -141,80 +120,76 @@
   </div>
 </section>
 
-<!-- Features -->
 <section class="container">
   <div class="features-grid">
     <div class="card feature-card">
+      <span class="feature-icon">🧩</span>
+      <h3>Vordefinierte Fragen</h3>
+      <p>Quiz-Vorlagen für SRH Messesituationen lassen sich mit einem Klick laden und anpassen.</p>
+    </div>
+    <div class="card feature-card">
+      <span class="feature-icon">👤</span>
+      <h3>Single-User Flow</h3>
+      <p>Kein Multiplayer: eine Person spielt direkt am Stand, klar und ohne Join-Code.</p>
+    </div>
+    <div class="card feature-card">
+      <span class="feature-icon">🔄</span>
+      <h3>Sofort neu startbar</h3>
+      <p>Nach jedem Durchlauf kann das Quiz direkt für den nächsten Gast zurückgesetzt werden.</p>
+    </div>
+    <div class="card feature-card">
       <span class="feature-icon">🎨</span>
-      <h3>Schönes Design</h3>
-      <p>Dunkles Theme mit lebhaften Farben und flüssigen Animationen.</p>
+      <h3>SRH Branding</h3>
+      <p>Farben, Texte und Oberfläche sind auf einen SRH Messeauftritt abgestimmt.</p>
     </div>
     <div class="card feature-card">
       <span class="feature-icon">📱</span>
-      <h3>Mobil-optimiert</h3>
-      <p>Perfekt für Tablets und Smartphones, responsiv auf allen Bildschirmgrößen.</p>
+      <h3>Mobil optimiert</h3>
+      <p>Touch-freundlich und gut lesbar auf Tablets und Smartphones.</p>
     </div>
     <div class="card feature-card">
-      <span class="feature-icon">🎡</span>
-      <h3>Glücksrad</h3>
-      <p>Animiertes Glücksrad für das zufällige Auswählen von Gewinnern.</p>
-    </div>
-    <div class="card feature-card">
-      <span class="feature-icon">📷</span>
-      <h3>QR-Code Beitritt</h3>
-      <p>Spieler treten über QR-Code bei — schnell und einfach.</p>
-    </div>
-    <div class="card feature-card">
-      <span class="feature-icon">⏱</span>
-      <h3>Timer & Punkte</h3>
-      <p>Countdown-Timer mit Zeitbonus für schnelle Antworten.</p>
-    </div>
-    <div class="card feature-card">
-      <span class="feature-icon">🏆</span>
-      <h3>Leaderboard</h3>
-      <p>Live-Rangliste mit Feieranimationen für die Sieger.</p>
+      <span class="feature-icon">⭐</span>
+      <h3>Direktes Feedback</h3>
+      <p>Punkte, Auflösung und Abschlussbildschirm sorgen für einen runden Messelauf.</p>
     </div>
   </div>
 </section>
 
-<!-- How it works -->
 <section class="how-it-works container">
-  <h2 class="text-center" style="font-size:1.8rem;font-weight:900;margin-bottom:.5rem">So funktioniert's</h2>
-  <p class="text-center text-muted">In drei einfachen Schritten zum interaktiven Quiz</p>
+  <h2 class="text-center" style="font-size:1.8rem;font-weight:900;margin-bottom:.5rem">So läuft das SRH Messe-Quiz</h2>
+  <p class="text-center text-muted">In drei klaren Schritten zum nächsten Durchlauf</p>
   <div class="steps">
     <div class="card step">
       <div class="step-num">1</div>
-      <h3>Quiz erstellen</h3>
-      <p>Gehe zu Admin und erstelle ein Quiz mit beliebig vielen Fragen und Antworten.</p>
+      <h3>Quiz vorbereiten</h3>
+      <p>Admin lädt eine Vorlage oder definiert eigene Fragen vor dem Einsatz am Stand.</p>
     </div>
     <div class="card step">
       <div class="step-num">2</div>
-      <h3>Spieler einladen</h3>
-      <p>Teile den QR-Code oder Spielcode mit deinen Mitspielern.</p>
+      <h3>Direkt spielen</h3>
+      <p>Besucher:innen starten das Quiz ohne Join-Code direkt auf dem Messegerät.</p>
     </div>
     <div class="card step">
       <div class="step-num">3</div>
-      <h3>Los geht's!</h3>
-      <p>Starte das Quiz und genieße die Animationen und das spannende Leaderboard.</p>
+      <h3>Neu starten</h3>
+      <p>Nach dem Ergebnis kann der nächste Lauf direkt neu gestartet oder neu vorbereitet werden.</p>
     </div>
   </div>
 </section>
 
-<!-- CTA -->
 <section class="cta-section">
-  <h2>Bereit loszulegen? 🚀</h2>
-  <p>Erstelle dein erstes Quiz kostenlos — keine Anmeldung erforderlich!</p>
+  <h2>Bereit für den nächsten Messetag?</h2>
+  <p>SRH Branding, vorbereitete Fragen und ein einfacher Einzelmodus sorgen für einen reibungslosen Ablauf am Stand.</p>
   <div class="flex gap-2 justify-center wrap">
-    <a href="admin.html" class="btn btn-primary btn-lg">Quiz erstellen</a>
-    <a href="play.html"  class="btn btn-secondary btn-lg">Jetzt mitspielen</a>
+    <a href="admin.html" class="btn btn-primary btn-lg">Jetzt vorbereiten</a>
+    <a href="play.html" class="btn btn-secondary btn-lg">Spieleransicht öffnen</a>
   </div>
 </section>
 
 <footer>
-  <p>⚡ QuizSAH – Interaktive Quiz-App · Erstellt für GitHub Pages · Open Source</p>
+  <p>SRH Quiz – Messemodus für vorbereitete Einzelspiele · Bereit für GitHub Pages</p>
 </footer>
 
-<!-- Scripts -->
 <script src="js/common.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => initStars('stars'));

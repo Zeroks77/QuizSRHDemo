@@ -1,34 +1,36 @@
 /* ============================================================
-   QuizSAH – Global Styles
-   Dark glassmorphism theme | Mobile-first | Animations
+   SRH Quiz – Global Styles
+   SRH-inspiriertes Messe-Branding | Mobile-first | Animations
    ============================================================ */
 
 /* ---------- Design Tokens ---------- */
 :root {
-  --bg:            #090917;
-  --bg2:           #12122a;
+  --bg:            #071a2b;
+  --bg2:           #0b2e4f;
   --glass:         rgba(255,255,255,0.06);
   --glass-hover:   rgba(255,255,255,0.10);
   --glass-border:  rgba(255,255,255,0.12);
 
-  --purple:   #7c3aed;
-  --purple-l: #a78bfa;
-  --pink:     #db2777;
-  --amber:    #f59e0b;
-  --teal:     #0d9488;
+  --primary:       #006999;
+  --primary-light: #9cbed9;
+  --accent:        #d44407;
+  --accent-soft:   #f28b58;
+  --ink:           #d6e7f4;
+  --amber:    #f7a34b;
+  --teal:     #0f7e7c;
   --green:    #22c55e;
   --red:      #ef4444;
 
   --text:     #f1f5f9;
-  --muted:    #94a3b8;
+  --muted:    #b4c8d8;
 
   --r:  14px;
   --rl: 22px;
   --sh: 0 8px 40px rgba(0,0,0,.5);
 
-  --grad-primary:   linear-gradient(135deg, #7c3aed, #db2777);
-  --grad-secondary: linear-gradient(135deg, #f59e0b, #ef4444);
-  --grad-success:   linear-gradient(135deg, #0d9488, #22c55e);
+  --grad-primary:   linear-gradient(135deg, #006999, #9cbed9);
+  --grad-secondary: linear-gradient(135deg, #d44407, #f28b58);
+  --grad-success:   linear-gradient(135deg, #0f7e7c, #22c55e);
   --grad-neutral:   linear-gradient(135deg, #334155, #1e293b);
 
   --ease: cubic-bezier(.4,0,.2,1);
@@ -60,8 +62,8 @@ input, textarea, select {
   transition: border-color .25s var(--ease), box-shadow .25s var(--ease);
 }
 input:focus, textarea:focus, select:focus {
-  border-color: var(--purple-l);
-  box-shadow: 0 0 0 3px rgba(124,58,237,.25);
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 3px rgba(156,190,217,.25);
 }
 select option { background: var(--bg2); }
 
@@ -138,10 +140,10 @@ select option { background: var(--bg2); }
 .btn:active { transform: scale(.96); }
 .btn:disabled { opacity: .45; pointer-events: none; }
 
-.btn-primary  { background: var(--grad-primary); color: #fff; box-shadow: 0 4px 20px rgba(124,58,237,.45); }
-.btn-primary:hover  { box-shadow: 0 6px 30px rgba(124,58,237,.65); transform: translateY(-2px); }
-.btn-secondary{ background: var(--grad-secondary); color: #fff; box-shadow: 0 4px 20px rgba(245,158,11,.35); }
-.btn-secondary:hover{ box-shadow: 0 6px 30px rgba(245,158,11,.55); transform: translateY(-2px); }
+.btn-primary  { background: var(--grad-primary); color: #fff; box-shadow: 0 4px 20px rgba(0,105,153,.45); }
+.btn-primary:hover  { box-shadow: 0 6px 30px rgba(0,105,153,.65); transform: translateY(-2px); }
+.btn-secondary{ background: var(--grad-secondary); color: #fff; box-shadow: 0 4px 20px rgba(212,68,7,.35); }
+.btn-secondary:hover{ box-shadow: 0 6px 30px rgba(212,68,7,.55); transform: translateY(-2px); }
 .btn-success  { background: var(--grad-success); color: #fff; box-shadow: 0 4px 20px rgba(13,148,136,.35); }
 .btn-success:hover  { box-shadow: 0 6px 30px rgba(13,148,136,.55); transform: translateY(-2px); }
 .btn-danger   { background: linear-gradient(135deg,#ef4444,#b91c1c); color: #fff; }
@@ -160,10 +162,10 @@ select option { background: var(--bg2); }
   font-weight: 700;
   letter-spacing: .05em;
 }
-.badge-purple { background: rgba(124,58,237,.25); color: var(--purple-l); }
+.badge-purple { background: rgba(156,190,217,.18); color: var(--primary-light); }
 .badge-green  { background: rgba(34,197,94,.2); color: var(--green); }
 .badge-red    { background: rgba(239,68,68,.2); color: var(--red); }
-.badge-amber  { background: rgba(245,158,11,.2); color: var(--amber); }
+.badge-amber  { background: rgba(212,68,7,.18); color: var(--accent-soft); }
 
 /* ---------- Nav ---------- */
 .navbar {
@@ -211,7 +213,7 @@ select option { background: var(--bg2); }
 .section-title {
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--purple-l);
+  color: var(--primary-light);
   text-transform: uppercase;
   letter-spacing: .08em;
   margin-bottom: 1rem;
@@ -237,8 +239,8 @@ select option { background: var(--bg2); }
   transition: border-color .2s, background .2s, transform .15s;
   cursor: pointer;
 }
-.answer-option:hover { border-color: var(--purple-l); background: var(--glass-hover); }
-.answer-option.selected { border-color: var(--purple); background: rgba(124,58,237,.15); }
+.answer-option:hover { border-color: var(--primary-light); background: var(--glass-hover); }
+.answer-option.selected { border-color: var(--primary); background: rgba(0,105,153,.16); }
 .answer-option.correct  {
   border-color: var(--green) !important;
   background: rgba(34,197,94,.15) !important;
@@ -290,8 +292,8 @@ select option { background: var(--bg2); }
   align-items: center;
   gap: .4rem;
   padding: .4rem 1rem;
-  background: rgba(124,58,237,.2);
-  border: 1px solid rgba(124,58,237,.4);
+  background: rgba(0,105,153,.2);
+  border: 1px solid rgba(156,190,217,.4);
   border-radius: 100px;
   font-weight: 700;
   font-size: 1.05rem;
@@ -481,9 +483,9 @@ select option { background: var(--bg2); }
   gap: .4rem;
   padding: .4rem 1rem;
   border-radius: 100px;
-  background: rgba(124,58,237,.2);
-  border: 1px solid rgba(124,58,237,.4);
-  color: var(--purple-l);
+  background: rgba(156,190,217,.16);
+  border: 1px solid rgba(156,190,217,.35);
+  color: var(--primary-light);
   font-size: .85rem;
   font-weight: 700;
   margin-bottom: 1.5rem;
@@ -554,7 +556,7 @@ select option { background: var(--bg2); }
   cursor: pointer;
   flex-wrap: wrap;
 }
-.quiz-item:hover { background: var(--glass-hover); border-color: var(--purple); }
+.quiz-item:hover { background: var(--glass-hover); border-color: var(--primary); }
 .quiz-item-title { font-weight: 700; flex: 1; min-width: 0; }
 .quiz-item-meta  { font-size: .8rem; color: var(--muted); }
 .quiz-item-actions{ display: flex; gap: .5rem; }

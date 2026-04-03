@@ -48,6 +48,13 @@ const GameStore = {
   remove(code) { Store.remove('game_' + code); }
 };
 
+/* Active game pointer */
+const ActiveGameStore = {
+  get()       { return Store.get('active_game_code', null); },
+  set(code)   { Store.set('active_game_code', code); },
+  clear()     { Store.remove('active_game_code'); }
+};
+
 /* =========================================================
    BroadcastChannel – real-time sync between tabs
    ========================================================= */
@@ -130,7 +137,7 @@ function renderQR(container, text, size = 200) {
    ========================================================= */
 function celebrate() {
   if (typeof confetti === 'undefined') return;
-  const colors = ['#7c3aed','#db2777','#f59e0b','#22c55e','#0d9488'];
+  const colors = ['#006999','#9cbed9','#d44407','#0b2e4f','#ffffff'];
   confetti({ particleCount: 120, spread: 70, colors, origin: { y: .55 } });
   setTimeout(() => confetti({ particleCount: 60, spread: 50, colors, origin: { y: .6, x: .2 } }), 400);
   setTimeout(() => confetti({ particleCount: 60, spread: 50, colors, origin: { y: .6, x: .8 } }), 700);

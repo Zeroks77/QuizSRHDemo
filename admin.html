@@ -3,126 +3,92 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin – QuizSAH</title>
+  <title>Admin – SRH Quiz</title>
   <link rel="stylesheet" href="css/style.css" />
-  <!-- QR Code library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <!-- Confetti -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <style>
-    .tabs { display: flex; gap: .5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
-    .tab-btn {
-      padding: .55rem 1.2rem;
-      border-radius: 100px;
-      border: 1px solid var(--glass-border);
-      background: var(--glass);
-      color: var(--text);
-      font-weight: 600;
-      font-size: .9rem;
-      cursor: pointer;
-      transition: all .2s;
-    }
-    .tab-btn.active { background: var(--grad-primary); border-color: transparent; }
-    .back-btn { color: var(--purple-l); font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: .3rem; margin-bottom: 1rem; }
+    .back-btn { color: var(--primary-light); font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: .3rem; margin-bottom: 1rem; }
     .back-btn:hover { text-decoration: underline; }
-
-    /* Start modal */
-    #modal-start { z-index: 160; }
-    .modal-play-url {
-      font-size: .75rem;
-      color: var(--muted);
-      word-break: break-all;
-      text-align: center;
-      margin-top: .5rem;
-    }
-
-    /* Host view layout */
-    .host-layout {
-      display: grid;
-      grid-template-columns: 1fr 300px;
-      gap: 1.5rem;
-      align-items: start;
-    }
-    @media(max-width:720px) { .host-layout { grid-template-columns: 1fr; } }
-
-    .host-q-card {
-      background: var(--glass);
-      border: 1px solid var(--glass-border);
-      border-radius: var(--rl);
-      padding: 1.5rem;
-    }
+    .host-layout { display: grid; grid-template-columns: 1.2fr .8fr; gap: 1.5rem; align-items: start; }
+    @media(max-width:820px) { .host-layout { grid-template-columns: 1fr; } }
+    .host-q-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--rl); padding: 1.5rem; }
     .host-lb-card { border-radius: var(--rl); }
-
-    /* Timer ring in host */
-    .host-timer { text-align: center; }
-
-    /* Correct indicator in editor */
-    .correct-indicator {
-      font-size: .75rem;
-      color: var(--green);
-      font-weight: 700;
+    .modal-play-url { font-size: .75rem; color: var(--muted); word-break: break-all; text-align: center; margin-top: .5rem; }
+    .brand-mark {
+      width: 68px;
+      height: 68px;
+      border-radius: 22px;
+      background: var(--grad-primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 900;
+      letter-spacing: .04em;
+      box-shadow: 0 8px 32px rgba(0,105,153,.32);
+      margin-bottom: .75rem;
     }
   </style>
 </head>
 <body>
-
-<!-- Starfield -->
 <div class="stars-bg" id="stars"></div>
 
-<!-- Navbar -->
 <nav class="navbar">
-  <a href="index.html" class="logo">⚡ QuizSAH</a>
+  <a href="index.html" class="logo">SRH Quiz</a>
   <div class="nav-links">
-    <a href="play.html" class="btn btn-primary btn-sm">▶ Spieler-Ansicht</a>
+    <a href="play.html" class="btn btn-primary btn-sm">▶ Spieleransicht</a>
   </div>
 </nav>
 
-<!-- ========================================================
-     VIEW: Quiz List
-     ======================================================== -->
 <div id="view-list" class="view-section container" style="padding-top:2rem;padding-bottom:4rem">
   <div class="flex justify-between items-center mb-2 wrap gap-2">
     <div>
-      <h1 style="font-size:1.8rem;font-weight:900">📚 Meine Quizze</h1>
-      <p class="text-muted text-sm">Erstelle und verwalte deine Quizze</p>
+      <h1 style="font-size:1.9rem;font-weight:900">SRH Messe-Quizze</h1>
+      <p class="text-muted text-sm">Quiz auswählen, vorbereiten und für Besucher:innen direkt starten.</p>
     </div>
-    <button class="btn btn-primary" onclick="newQuiz()">+ Neues Quiz</button>
+    <div class="flex gap-1 wrap">
+      <button class="btn btn-ghost" onclick="loadPresetQuizzes()">📚 Vorlagen laden</button>
+      <button class="btn btn-primary" onclick="newQuiz()">+ Neues Quiz</button>
+    </div>
+  </div>
+
+  <div class="card mb-2">
+    <div class="flex gap-2 items-center wrap">
+      <div class="brand-mark">SRH</div>
+      <div>
+        <div class="section-title" style="margin-bottom:.35rem">Messemodus</div>
+        <p class="text-muted text-sm">Single-User statt Multiplayer: Admin bereitet das Quiz vor, Besucher:innen spielen direkt auf dem Gerät und danach kann der Lauf neu gestartet werden.</p>
+      </div>
+    </div>
   </div>
 
   <div id="quiz-list" class="quiz-list mt-2"></div>
 
-  <!-- Demo Quiz Button -->
   <div class="mt-3 text-center">
-    <button class="btn btn-ghost btn-sm" onclick="createDemoQuiz()">
-      🎲 Demo-Quiz laden
-    </button>
+    <button class="btn btn-ghost btn-sm" onclick="createDemoQuiz()">🎲 SRH Demo-Quiz laden</button>
   </div>
 </div>
 
-<!-- ========================================================
-     VIEW: Quiz Editor
-     ======================================================== -->
 <div id="view-editor" class="view-section hidden container" style="padding-top:2rem;padding-bottom:4rem">
   <div class="flex justify-between items-center mb-2 wrap gap-2">
     <div>
       <span class="back-btn" onclick="renderQuizList()">← Zurück zur Übersicht</span>
-      <h2 style="font-size:1.6rem;font-weight:900">✏️ Quiz bearbeiten</h2>
-      <p class="text-muted text-sm">Drücke Strg+S zum schnellen Speichern</p>
+      <h2 style="font-size:1.6rem;font-weight:900">Quiz bearbeiten</h2>
+      <p class="text-muted text-sm">Fragen für die SRH Messe vorab definieren und jederzeit anpassen.</p>
     </div>
     <div class="flex gap-1 wrap">
       <button class="btn btn-success" onclick="saveQuiz()">💾 Speichern</button>
-      <button class="btn btn-primary" onclick="saveAndStart()">▶ Speichern &amp; Starten</button>
+      <button class="btn btn-primary" onclick="saveAndStart()">▶ Speichern &amp; vorbereiten</button>
     </div>
   </div>
 
   <div class="card mb-2">
     <div class="form-group">
       <label class="form-label">Quiz-Titel *</label>
-      <input id="quiz-title" type="text" placeholder="z.B. Geografie-Quiz Deutschland" />
+      <input id="quiz-title" type="text" placeholder="z.B. SRH Messe-Quiz Informatik" />
     </div>
     <div class="form-group">
       <label class="form-label">Beschreibung</label>
-      <textarea id="quiz-description" rows="2" placeholder="Kurze Beschreibung (optional)"></textarea>
+      <textarea id="quiz-description" rows="2" placeholder="Kurze Einleitung für Besucher:innen"></textarea>
     </div>
   </div>
 
@@ -138,232 +104,86 @@
   </div>
 </div>
 
-<!-- ========================================================
-     VIEW: Game Host
-     ======================================================== -->
 <div id="view-host" class="view-section hidden" style="padding:1rem;max-width:1100px;margin:0 auto;padding-bottom:4rem">
-
   <div class="flex justify-between items-center mb-2 wrap gap-2">
     <div>
-      <h2 id="host-quiz-title" style="font-size:1.5rem;font-weight:900">Quiz</h2>
-      <div class="flex gap-1 items-center mt-1">
-        <span class="badge badge-amber">Live</span>
-        <span class="text-sm text-muted">Spieler: <strong id="player-count">0</strong></span>
+      <h2 id="host-quiz-title" style="font-size:1.5rem;font-weight:900">SRH Quiz</h2>
+      <div class="flex gap-1 items-center mt-1 wrap">
+        <span class="badge badge-amber">Messemodus</span>
+        <span class="text-sm text-muted">Status: <strong id="game-status">Bereit für Start</strong></span>
       </div>
+      <p id="host-quiz-description" class="text-muted text-sm mt-1">Bereit für den nächsten Messegast.</p>
     </div>
     <div class="flex gap-1 wrap">
-      <button class="btn btn-secondary" onclick="openWheel()">🎡 Glücksrad</button>
-      <button id="btn-next-q" class="btn btn-primary" onclick="nextQuestion()">▶ Nächste Frage</button>
-      <button class="btn btn-ghost btn-sm" onclick="showStartModal(currentGame?.code)">📷 QR erneut zeigen</button>
+      <button class="btn btn-primary" onclick="openPlayerView()">▶ Spieleransicht öffnen</button>
+      <button class="btn btn-secondary" onclick="restartGame()">🔄 Neu vorbereiten</button>
+      <button class="btn btn-ghost btn-sm" onclick="showStartModal()">ℹ️ Info</button>
     </div>
   </div>
 
-  <!-- Progress -->
   <div class="progress-bar mb-2">
     <div class="progress-bar-fill" id="host-progress" style="width:0%"></div>
   </div>
 
   <div class="host-layout">
-    <!-- Main question panel -->
     <div>
-      <!-- Stats -->
       <div class="host-stats mb-2">
         <div class="stat-card">
-          <div class="stat-val" id="player-count-stat">0</div>
-          <div class="stat-lbl">Spieler</div>
+          <div class="stat-val" id="question-count-stat">0</div>
+          <div class="stat-lbl">Fragen</div>
         </div>
         <div class="stat-card">
-          <div class="stat-val" id="answered-count">0/0</div>
-          <div class="stat-lbl">Beantwortet</div>
+          <div class="stat-val" id="progress-stat">0 / 0</div>
+          <div class="stat-lbl">Fortschritt</div>
         </div>
-        <div class="stat-card host-timer">
-          <div class="timer-ring" style="width:80px;height:80px;margin:0 auto">
-            <svg width="80" height="80">
-              <circle cx="40" cy="40" r="44" fill="none" stroke="var(--glass-border)" stroke-width="6"
-                transform="scale(.9) translate(4,4)" />
-              <circle id="host-timer-arc" cx="40" cy="40" r="44" fill="none" stroke="var(--purple-l)"
-                stroke-width="6" stroke-linecap="round"
-                transform="scale(.9) translate(4,4)"
-                style="transition:stroke-dashoffset .9s linear,stroke .3s" />
-            </svg>
-            <span class="timer-text" id="host-timer-text" style="font-size:1.2rem">–</span>
-          </div>
-          <div class="stat-lbl">Zeit</div>
+        <div class="stat-card">
+          <div class="stat-val" id="score-stat">0</div>
+          <div class="stat-lbl">Punkte</div>
         </div>
       </div>
 
-      <!-- Current question display -->
       <div class="host-q-card mb-2">
-        <p id="host-q-display" class="text-muted">Starte die erste Frage mit "Nächste Frage".</p>
+        <p id="host-q-display" class="text-muted">Noch kein Lauf aktiv.</p>
       </div>
 
-      <!-- Players grid -->
       <div class="card">
-        <h4 class="section-title">Spieler</h4>
-        <div id="players-grid" class="players-grid">
-          <span class="text-muted text-sm">Noch keine Spieler beigetreten…</span>
+        <h4 class="section-title">Ablauf</h4>
+        <div id="host-status-list" class="leaderboard">
+          <span class="text-muted text-sm">Sobald das Quiz vorbereitet ist, erscheint hier der Ablauf.</span>
         </div>
       </div>
     </div>
 
-    <!-- Leaderboard side panel -->
     <div>
       <div class="card host-lb-card" id="host-leaderboard">
-        <h4 class="section-title">🏆 Leaderboard</h4>
-        <div id="host-lb-list" class="leaderboard"></div>
+        <h4 class="section-title">Letztes Ergebnis</h4>
+        <div id="host-lb-list" class="leaderboard">
+          <span class="text-muted text-sm">Nach einem abgeschlossenen Lauf erscheint hier die Zusammenfassung.</span>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ========================================================
-     MODAL: Start Game (QR Code + Game Code)
-     ======================================================== -->
 <div id="modal-start" class="modal-backdrop hidden">
   <div class="modal">
-    <h3 class="modal-title">🎮 Spiel starten</h3>
-    <p class="text-muted text-sm mb-2">
-      Teile den QR-Code oder den Spielcode mit deinen Mitspielern.
-      Spieler öffnen <strong>play.html</strong> und geben den Code ein.
-    </p>
-    <p class="text-muted text-sm mb-2">
-      Für die Demo auf demselben Gerät: Öffne die Spieler-Ansicht in einem neuen Tab und trage dort einen Namen ein.
-    </p>
-
-    <div class="qr-container mb-2">
-      <div id="modal-qr"></div>
-      <div class="game-code-label">Spielcode</div>
-      <div class="game-code-display" id="modal-game-code">––––––</div>
+    <h3 class="modal-title">SRH Quiz ist bereit</h3>
+    <p class="text-muted text-sm mb-2">Dieses Quiz läuft im Einzelmodus ohne Multiplayer. Öffne die Spieleransicht auf dem Messegerät und starte den Lauf direkt dort.</p>
+    <div class="card mb-2 text-center">
+      <div class="section-title" style="margin-bottom:.4rem">Vorbereitetes Quiz</div>
+      <strong id="modal-quiz-title">SRH Quiz</strong>
       <p class="modal-play-url" id="modal-play-url"></p>
     </div>
-
     <div class="flex flex-col gap-1 mb-2">
-      <button class="btn btn-secondary w-full" onclick="openPlayerView()">
-        ▶ Spieler-Ansicht auf diesem Gerät öffnen
-      </button>
-      <button class="btn btn-ghost w-full" onclick="copyPlayerLink()">
-        🔗 Link kopieren
-      </button>
+      <button class="btn btn-primary w-full" onclick="openPlayerView()">▶ Spieleransicht öffnen</button>
+      <button class="btn btn-ghost w-full" onclick="copyPlayerLink()">🔗 Link kopieren</button>
     </div>
-
-    <button class="btn btn-primary w-full" onclick="closeStartModal()">
-      ✓ Verstanden – Spiel leiten
-    </button>
+    <button class="btn btn-secondary w-full" onclick="closeStartModal()">✓ Verstanden</button>
   </div>
 </div>
 
-<!-- ========================================================
-     WHEEL OVERLAY
-     ======================================================== -->
-<div id="wheel-overlay" class="hidden">
-  <h2>🎡 Glücksrad</h2>
-  <canvas id="wheel-canvas"></canvas>
-  <div id="wheel-winner" class="hidden" style="color:var(--amber)"></div>
-  <div class="flex gap-2 wrap justify-center">
-    <button id="btn-spin" class="btn btn-secondary btn-lg" onclick="spinWheel()">🎰 Drehen!</button>
-    <button class="btn btn-ghost" onclick="closeWheel()">✕ Schließen</button>
-  </div>
-</div>
-
-<!-- Toast container -->
 <div id="toast-container"></div>
-
-<!-- Scripts -->
 <script src="js/common.js"></script>
-<script src="js/wheel.js"></script>
 <script src="js/admin.js"></script>
-<script>
-// Save & Start helper
-function saveAndStart() {
-  if (!currentQuiz) return;
-  currentQuiz.title = document.getElementById('quiz-title').value.trim();
-  currentQuiz.description = document.getElementById('quiz-description').value.trim();
-  if (!currentQuiz.title) { toast('Bitte einen Titel eingeben!', 'error'); return; }
-  if (!currentQuiz.questions.length) { toast('Mindestens eine Frage erforderlich!', 'error'); return; }
-  for (let [i, q] of currentQuiz.questions.entries()) {
-    if (!q.text.trim()) { toast(`Frage ${i+1}: Text fehlt!`, 'error'); return; }
-    if (q.answers.length < 2) { toast(`Frage ${i+1}: Mindestens 2 Antworten!`, 'error'); return; }
-    if (!q.answers.some(a => a.isCorrect)) { toast(`Frage ${i+1}: Keine richtige Antwort!`, 'error'); return; }
-  }
-  QuizStore.upsert(currentQuiz);
-  startGame(currentQuiz.id);
-}
-
-function openPlayerView() {
-  window.open(getPlayerJoinUrl(), '_blank', 'noopener');
-}
-
-async function copyPlayerLink() {
-  const url = getPlayerJoinUrl();
-  try {
-    if (navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(url);
-      toast('Spieler-Link kopiert ✓', 'success');
-      return;
-    }
-  } catch (_) {}
-  window.prompt('Spieler-Link kopieren:', url);
-}
-
-// Demo quiz
-function createDemoQuiz() {
-  const demo = {
-    id: uuidv4(),
-    title: '🌍 Geografie-Quiz',
-    description: 'Teste dein Wissen über Länder und Hauptstädte!',
-    createdAt: new Date().toISOString(),
-    questions: [
-      {
-        id: uuidv4(), text: 'Was ist die Hauptstadt von Australien?', timeLimit: 30,
-        answers: [
-          { id: uuidv4(), text: 'Sydney',   isCorrect: false },
-          { id: uuidv4(), text: 'Melbourne',isCorrect: false },
-          { id: uuidv4(), text: 'Canberra', isCorrect: true  },
-          { id: uuidv4(), text: 'Brisbane', isCorrect: false }
-        ]
-      },
-      {
-        id: uuidv4(), text: 'Welches Land hat die längste Küstenlinie der Welt?', timeLimit: 20,
-        answers: [
-          { id: uuidv4(), text: 'Russland', isCorrect: false },
-          { id: uuidv4(), text: 'Kanada',   isCorrect: true  },
-          { id: uuidv4(), text: 'Brasilien',isCorrect: false },
-          { id: uuidv4(), text: 'Norwegen', isCorrect: false }
-        ]
-      },
-      {
-        id: uuidv4(), text: 'In welchem Land liegt der Kilimandscharo?', timeLimit: 20,
-        answers: [
-          { id: uuidv4(), text: 'Kenia',    isCorrect: false },
-          { id: uuidv4(), text: 'Äthiopien',isCorrect: false },
-          { id: uuidv4(), text: 'Tansania', isCorrect: true  },
-          { id: uuidv4(), text: 'Uganda',   isCorrect: false }
-        ]
-      },
-      {
-        id: uuidv4(), text: 'Wie viele Länder hat der afrikanische Kontinent?', timeLimit: 30,
-        answers: [
-          { id: uuidv4(), text: '48', isCorrect: false },
-          { id: uuidv4(), text: '52', isCorrect: false },
-          { id: uuidv4(), text: '54', isCorrect: true  },
-          { id: uuidv4(), text: '56', isCorrect: false }
-        ]
-      },
-      {
-        id: uuidv4(), text: 'Welcher Ozean ist der größte der Welt?', timeLimit: 15,
-        answers: [
-          { id: uuidv4(), text: 'Atlantischer Ozean', isCorrect: false },
-          { id: uuidv4(), text: 'Indischer Ozean',    isCorrect: false },
-          { id: uuidv4(), text: 'Pazifischer Ozean',  isCorrect: true  },
-          { id: uuidv4(), text: 'Arktischer Ozean',   isCorrect: false }
-        ]
-      }
-    ]
-  };
-  QuizStore.upsert(demo);
-  toast('Demo-Quiz "Geografie-Quiz" geladen! ✓', 'success');
-  renderQuizList();
-}
-</script>
 </body>
 </html>

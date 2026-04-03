@@ -18,9 +18,9 @@ class LuckyWheel {
     this.onWinner = null;   // callback(name)
 
     this.colors = [
-      '#7c3aed','#db2777','#f59e0b','#0d9488',
+      '#006999','#d44407','#0f7e7c','#9cbed9',
       '#2563eb','#dc2626','#16a34a','#d97706',
-      '#7e22ce','#be123c','#0369a1','#065f46'
+      '#0b2e4f','#f28b58','#0369a1','#065f46'
     ];
 
     const dpr = window.devicePixelRatio || 1;
@@ -42,8 +42,8 @@ class LuckyWheel {
 
     // Outer glow ring
     const grad = ctx.createRadialGradient(cx, cy, r-4, cx, cy, r+8);
-    grad.addColorStop(0, 'rgba(124,58,237,.8)');
-    grad.addColorStop(1, 'rgba(124,58,237,0)');
+    grad.addColorStop(0, 'rgba(0,105,153,.8)');
+    grad.addColorStop(1, 'rgba(0,105,153,0)');
     ctx.beginPath();
     ctx.arc(cx, cy, r+6, 0, Math.PI*2);
     ctx.fillStyle = grad;
@@ -82,8 +82,8 @@ class LuckyWheel {
     ctx.beginPath();
     ctx.arc(cx, cy, 28, 0, Math.PI*2);
     const cg = ctx.createRadialGradient(cx-4, cy-4, 2, cx, cy, 28);
-    cg.addColorStop(0, '#a78bfa');
-    cg.addColorStop(1, '#7c3aed');
+    cg.addColorStop(0, '#9cbed9');
+    cg.addColorStop(1, '#006999');
     ctx.fillStyle = cg;
     ctx.fill();
     ctx.strokeStyle = 'rgba(255,255,255,.3)';

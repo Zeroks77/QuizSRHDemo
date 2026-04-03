@@ -1,42 +1,27 @@
 /**
- * admin.js – Quiz Creator + Game Host
- *
- * Views (sections shown/hidden):
- *   #view-list   – quiz library
- *   #view-editor – quiz / question editor
- *   #view-host   – game host screen
+ * admin.js – Quiz Creator + Messe-Host
  */
 
-/* =========================================================
-   State
-   ========================================================= */
-let currentQuiz   = null;   // quiz being edited
-let currentGame   = null;   // active game session
-let channel       = null;   // BroadcastChannel
-let timerInterval = null;
-let wheel         = null;
-let timeLeft      = 0;
+let currentQuiz = null;
+let currentGame = null;
+let hostSyncInterval = null;
 
-/* =========================================================
-   Navigation
-   ========================================================= */
 function showView(id) {
-  document.querySelectorAll('.view-section').forEach(s => s.classList.add('hidden'));
+  document.querySelectorAll('.view-section').forEach(section => section.classList.add('hidden'));
   document.getElementById(id)?.classList.remove('hidden');
 }
 
-/* =========================================================
-   Quiz List
-   ========================================================= */
 function renderQuizList() {
+  stopHostSync();
   showView('view-list');
   const list = QuizStore.all();
-  const el   = document.getElementById('quiz-list');
+  const el = document.getElementById('quiz-list');
+
   if (!list.length) {
-    el.innerHTML = `<div class="text-center text-muted mt-3">
-      Noch keine Quizze. Erstelle dein erstes! 🎉</div>`;
+    el.innerHTML = `<div class="text-center text-muted mt-3">Noch keine Quizze. Lade eine Vorlage oder erstelle dein erstes SRH Messe-Quiz.</div>`;
     return;
   }
+
   el.innerHTML = list.map(q => `
     <div class="quiz-item" data-id="${q.id}">
       <div>
@@ -45,7 +30,7 @@ function renderQuizList() {
       </div>
       <div class="quiz-item-actions">
         <button class="btn btn-ghost btn-sm" onclick="editQuiz('${q.id}')">✏️ Bearbeiten</button>
-        <button class="btn btn-primary btn-sm" onclick="startGame('${q.id}')">▶ Starten</button>
+        <button class="btn btn-primary btn-sm" onclick="startGame('${q.id}')">▶ Vorbereiten</button>
         <button class="btn btn-danger btn-sm btn-icon" onclick="deleteQuiz('${q.id}')" title="Löschen">🗑</button>
       </div>
     </div>`).join('');
@@ -54,13 +39,15 @@ function renderQuizList() {
 function deleteQuiz(id) {
   if (!confirm('Quiz wirklich löschen?')) return;
   QuizStore.delete(id);
+  if (currentGame?.quizId === id) {
+    GameStore.remove(currentGame.code);
+    ActiveGameStore.clear();
+    currentGame = null;
+  }
   renderQuizList();
   toast('Quiz gelöscht', 'error');
 }
 
-/* =========================================================
-   Quiz / Question Editor
-   ========================================================= */
 function newQuiz() {
   currentQuiz = {
     id: uuidv4(),
@@ -80,7 +67,7 @@ function editQuiz(id) {
 
 function renderEditor() {
   showView('view-editor');
-  document.getElementById('quiz-title').value       = currentQuiz.title;
+  document.getElementById('quiz-title').value = currentQuiz.title;
   document.getElementById('quiz-description').value = currentQuiz.description;
   renderQuestions();
 }
@@ -99,8 +86,7 @@ function renderQuestions() {
           <div class="flex gap-1 items-center flex-wrap">
             <label class="form-label" style="min-width:max-content">⏱ Zeit:</label>
             <select style="max-width:120px" onchange="updateQuestion(${qi},'timeLimit',+this.value)">
-              ${[10,15,20,30,45,60].map(s =>
-                `<option value="${s}" ${q.timeLimit===s?'selected':''}>${s}s</option>`).join('')}
+              ${[10,15,20,30,45,60].map(s => `<option value="${s}" ${q.timeLimit === s ? 'selected' : ''}>${s}s</option>`).join('')}
             </select>
           </div>
         </div>
@@ -111,9 +97,7 @@ function renderQuestions() {
       <div class="answers-grid" id="answers-grid-${qi}">
         ${q.answers.map((a, ai) => renderAnswerEditor(qi, ai, a)).join('')}
       </div>
-      ${q.answers.length < 6
-        ? `<button class="btn btn-ghost btn-sm mt-1" onclick="addAnswer(${qi})">+ Antwort hinzufügen</button>`
-        : ''}
+      ${q.answers.length < 6 ? `<button class="btn btn-ghost btn-sm mt-1" onclick="addAnswer(${qi})">+ Antwort hinzufügen</button>` : ''}
     </div>
   `).join('');
 }
@@ -133,31 +117,34 @@ function renderAnswerEditor(qi, ai, a) {
         onclick="toggleCorrect(${qi},${ai})">
         ${a.isCorrect ? '✓' : ''}
       </button>
-      ${currentQuiz.questions[qi].answers.length > 2
-        ? `<button class="btn btn-danger btn-sm btn-icon" onclick="removeAnswer(${qi},${ai})">✕</button>`
-        : ''}
+      ${currentQuiz.questions[qi].answers.length > 2 ? `<button class="btn btn-danger btn-sm btn-icon" onclick="removeAnswer(${qi},${ai})">✕</button>` : ''}
     </div>`;
 }
 
 function updateQuestion(qi, field, val) {
   currentQuiz.questions[qi][field] = val;
 }
+
 function updateAnswer(qi, ai, field, val) {
   currentQuiz.questions[qi].answers[ai][field] = val;
 }
+
 function toggleCorrect(qi, ai) {
   const answers = currentQuiz.questions[qi].answers;
   answers[ai].isCorrect = !answers[ai].isCorrect;
   renderQuestions();
 }
+
 function addAnswer(qi) {
   currentQuiz.questions[qi].answers.push({ id: uuidv4(), text: '', isCorrect: false });
   renderQuestions();
 }
+
 function removeAnswer(qi, ai) {
   currentQuiz.questions[qi].answers.splice(ai, 1);
   renderQuestions();
 }
+
 function addQuestion() {
   currentQuiz.questions.push({
     id: uuidv4(),
@@ -171,335 +158,345 @@ function addQuestion() {
     ]
   });
   renderQuestions();
-  // Scroll new card into view
   setTimeout(() => {
-    const last = document.getElementById(`qcard-${currentQuiz.questions.length - 1}`);
-    last?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById(`qcard-${currentQuiz.questions.length - 1}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, 50);
 }
+
 function removeQuestion(qi) {
   currentQuiz.questions.splice(qi, 1);
   renderQuestions();
 }
 
-function saveQuiz() {
+function validateCurrentQuiz() {
   currentQuiz.title = document.getElementById('quiz-title').value.trim();
   currentQuiz.description = document.getElementById('quiz-description').value.trim();
-  if (!currentQuiz.title) { toast('Bitte einen Titel eingeben!', 'error'); return; }
-  if (!currentQuiz.questions.length) { toast('Mindestens eine Frage erforderlich!', 'error'); return; }
-  // Validate each question
-  for (let [i, q] of currentQuiz.questions.entries()) {
-    if (!q.text.trim()) { toast(`Frage ${i+1}: Text fehlt!`, 'error'); return; }
-    if (q.answers.length < 2) { toast(`Frage ${i+1}: Mindestens 2 Antworten!`, 'error'); return; }
-    if (!q.answers.some(a => a.isCorrect)) { toast(`Frage ${i+1}: Keine richtige Antwort markiert!`, 'error'); return; }
+
+  if (!currentQuiz.title) {
+    toast('Bitte einen Titel eingeben!', 'error');
+    return false;
   }
+  if (!currentQuiz.questions.length) {
+    toast('Mindestens eine Frage erforderlich!', 'error');
+    return false;
+  }
+
+  for (const [index, question] of currentQuiz.questions.entries()) {
+    if (!question.text.trim()) {
+      toast(`Frage ${index + 1}: Text fehlt!`, 'error');
+      return false;
+    }
+    if (question.answers.length < 2) {
+      toast(`Frage ${index + 1}: Mindestens 2 Antworten!`, 'error');
+      return false;
+    }
+    if (!question.answers.some(answer => answer.isCorrect)) {
+      toast(`Frage ${index + 1}: Keine richtige Antwort markiert!`, 'error');
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function saveQuiz() {
+  if (!currentQuiz || !validateCurrentQuiz()) return;
   QuizStore.upsert(currentQuiz);
   toast('Quiz gespeichert ✓', 'success');
   renderQuizList();
 }
 
-/* =========================================================
-   Game – Start & Host
-   ========================================================= */
+function saveAndStart() {
+  if (!currentQuiz || !validateCurrentQuiz()) return;
+  QuizStore.upsert(currentQuiz);
+  startGame(currentQuiz.id);
+}
+
+function buildGameState(quizId, existingCode = generateGameCode()) {
+  const quiz = QuizStore.get(quizId);
+  return {
+    code: existingCode,
+    quizId,
+    status: 'ready',
+    currentQuestion: -1,
+    totalQuestions: quiz?.questions?.length || 0,
+    currentPlayer: {
+      name: 'Messegast',
+      score: 0
+    },
+    answers: {},
+    preparedAt: new Date().toISOString(),
+    finishedAt: null,
+    lastResult: null
+  };
+}
+
+function persistCurrentGame() {
+  if (!currentGame) return;
+  GameStore.set(currentGame.code, currentGame);
+  ActiveGameStore.set(currentGame.code);
+}
+
 function startGame(quizId) {
   const quiz = QuizStore.get(quizId);
   if (!quiz) return toast('Quiz nicht gefunden', 'error');
 
-  const code = generateGameCode();
-  currentGame = {
-    code,
-    quizId,
-    status: 'waiting',
-    currentQuestion: -1,
-    players: [],
-    answers: {},   // questionIdx → { playerId: answerId }
-    startedAt: new Date().toISOString()
-  };
-  GameStore.set(code, currentGame);
-
-  // Open BroadcastChannel
-  if (channel) channel.close();
-  channel = new QuizChannel(code, handleChannelMessage);
-
+  currentGame = buildGameState(quizId, currentGame?.quizId === quizId ? currentGame.code : generateGameCode());
+  persistCurrentGame();
   renderHostView(quiz);
   showView('view-host');
-
-  // Show QR code modal
-  showStartModal(code);
+  showStartModal();
 }
 
-function showStartModal(code) {
-  const url  = getPlayerJoinUrl(code);
+function restartGame() {
+  if (!currentGame) return;
+  currentGame = buildGameState(currentGame.quizId, currentGame.code);
+  persistCurrentGame();
+  renderHostView(QuizStore.get(currentGame.quizId));
+  toast('Quiz wurde für den nächsten Messegast neu vorbereitet.', 'success');
+}
+
+function getPlayerJoinUrl() {
+  return `${location.origin}${location.pathname.replace('admin.html', '')}play.html`;
+}
+
+function showStartModal() {
   const modal = document.getElementById('modal-start');
   modal.classList.remove('hidden');
-  document.getElementById('modal-game-code').textContent = code;
-  const qrEl = document.getElementById('modal-qr');
-  renderQR(qrEl, url, 200);
-  document.getElementById('modal-play-url').textContent = url;
+  const quiz = QuizStore.get(currentGame?.quizId);
+  document.getElementById('modal-quiz-title').textContent = quiz?.title || 'SRH Messe-Quiz';
+  document.getElementById('modal-play-url').textContent = getPlayerJoinUrl();
 }
 
 function closeStartModal() {
   document.getElementById('modal-start').classList.add('hidden');
 }
 
-function getPlayerJoinUrl(code = currentGame?.code) {
-  if (!code) return `${location.origin}${location.pathname.replace('admin.html', '')}play.html`;
-  return `${location.origin}${location.pathname.replace('admin.html', '')}play.html?code=${code}`;
+function openPlayerView() {
+  window.open(getPlayerJoinUrl(), '_blank', 'noopener');
 }
 
-function handleChannelMessage(msg) {
-  if (!currentGame) return;
-  switch (msg.type) {
-    case 'player:join':
-      if (!currentGame.players.find(p => p.id === msg.playerId)) {
-        currentGame.players.push({ id: msg.playerId, name: msg.name, score: 0, answers: {} });
-        GameStore.set(currentGame.code, currentGame);
-        renderPlayerList();
-        toast(`${msg.name} ist beigetreten 👋`);
-      }
-      // Send back current state
-      channel.send('host:state', { status: currentGame.status, questionIdx: currentGame.currentQuestion });
-      break;
-    case 'player:answer':
-      recordAnswer(msg.playerId, msg.questionIdx, msg.answerId, msg.timeLeft);
-      break;
-    case 'player:leave':
-      currentGame.players = currentGame.players.filter(p => p.id !== msg.playerId);
-      GameStore.set(currentGame.code, currentGame);
-      renderPlayerList();
-      break;
+async function copyPlayerLink() {
+  const url = getPlayerJoinUrl();
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(url);
+      toast('Spieler-Link kopiert ✓', 'success');
+      return;
+    }
+  } catch (_) {}
+  window.prompt('Spieler-Link kopieren:', url);
+}
+
+function startHostSync() {
+  stopHostSync();
+  hostSyncInterval = window.setInterval(syncCurrentGameFromStore, 1000);
+}
+
+function stopHostSync() {
+  if (hostSyncInterval) {
+    clearInterval(hostSyncInterval);
+    hostSyncInterval = null;
   }
 }
 
-function recordAnswer(playerId, questionIdx, answerId, timeLeft) {
-  if (!currentGame.answers[questionIdx]) currentGame.answers[questionIdx] = {};
-  if (currentGame.answers[questionIdx][playerId]) return; // already answered
-  currentGame.answers[questionIdx][playerId] = { answerId, timeLeft };
-  GameStore.set(currentGame.code, currentGame);
-
-  // Mark player chip as answered
-  const chip = document.querySelector(`.player-chip[data-id="${playerId}"]`);
-  if (chip) chip.classList.add('answered');
-
-  // Update count
-  const answeredCount = Object.keys(currentGame.answers[questionIdx] || {}).length;
-  const total         = currentGame.players.length;
-  const el = document.getElementById('answered-count');
-  if (el) el.textContent = `${answeredCount}/${total}`;
-}
-
-/* ---------- Render Host View ---------- */
-function renderHostView(quiz) {
-  const el = document.getElementById('host-quiz-title');
-  if (el) el.textContent = quiz.title;
-  renderPlayerList();
+function syncCurrentGameFromStore() {
+  if (!currentGame?.code) return;
+  const latest = GameStore.get(currentGame.code);
+  if (!latest) return;
+  currentGame = latest;
   updateHostControls();
 }
 
-function renderPlayerList() {
-  const el = document.getElementById('players-grid');
-  if (!el) return;
-  el.innerHTML = currentGame.players.length
-    ? currentGame.players.map(p => `
-        <span class="player-chip ${hasAnswered(p.id) ? 'answered' : ''}" data-id="${p.id}">
-          ${esc(p.name)}
-        </span>`).join('')
-    : '<span class="text-muted text-sm">Noch keine Spieler beigetreten…</span>';
-  const countEl = document.getElementById('player-count');
-  if (countEl) countEl.textContent = currentGame.players.length;
-  const countStatEl = document.getElementById('player-count-stat');
-  if (countStatEl) countStatEl.textContent = currentGame.players.length;
-}
-
-function hasAnswered(playerId) {
-  const qi = currentGame.currentQuestion;
-  return !!(currentGame.answers[qi]?.[playerId]);
+function renderHostView(quiz) {
+  document.getElementById('host-quiz-title').textContent = quiz?.title || 'SRH Messe-Quiz';
+  document.getElementById('host-quiz-description').textContent = quiz?.description || 'Bereit für den nächsten Messegast.';
+  updateHostControls();
+  startHostSync();
 }
 
 function updateHostControls() {
-  const qi   = currentGame.currentQuestion;
+  if (!currentGame) return;
+
   const quiz = QuizStore.get(currentGame.quizId);
   const total = quiz?.questions?.length || 0;
+  const activeIndex = Math.max(0, currentGame.currentQuestion + 1);
+  const progress = currentGame.status === 'finished'
+    ? 100
+    : total
+      ? Math.round((activeIndex / total) * 100)
+      : 0;
 
-  document.getElementById('btn-next-q')?.removeAttribute('disabled');
-  if (qi >= total - 1) {
-    const btn = document.getElementById('btn-next-q');
-    if (btn) { btn.textContent = '🏁 Spiel beenden'; btn.onclick = endGame; }
+  const statusMap = {
+    ready: 'Bereit für Start',
+    active: 'Quiz läuft',
+    finished: 'Quiz abgeschlossen'
+  };
+
+  document.getElementById('game-status').textContent = statusMap[currentGame.status] || 'Unbekannt';
+  document.getElementById('question-count-stat').textContent = String(total);
+  document.getElementById('progress-stat').textContent = currentGame.status === 'ready' ? '0 / ' + total : `${activeIndex} / ${total}`;
+  document.getElementById('score-stat').textContent = `${currentGame.currentPlayer?.score || 0}`;
+  document.getElementById('host-progress').style.width = `${progress}%`;
+
+  const display = document.getElementById('host-q-display');
+  if (currentGame.status === 'ready') {
+    display.innerHTML = total
+      ? `<strong>Bereit:</strong> ${esc(quiz.questions[0].text)}`
+      : 'Dieses Quiz enthält noch keine Fragen.';
+  } else if (currentGame.status === 'active') {
+    const question = quiz.questions[currentGame.currentQuestion];
+    display.innerHTML = question
+      ? `<strong>Aktuelle Frage ${currentGame.currentQuestion + 1}/${total}:</strong> ${esc(question.text)}`
+      : 'Das Quiz läuft gerade.';
+  } else {
+    display.innerHTML = `<strong>Abgeschlossen:</strong> ${currentGame.lastResult?.score ?? currentGame.currentPlayer?.score ?? 0} Punkte erzielt.`;
   }
 
-  const prog = document.getElementById('host-progress');
-  if (prog) prog.style.width = total ? `${((qi+1)/total)*100}%` : '0%';
-
-  const qDisp = document.getElementById('host-q-display');
-  if (qDisp) {
-    if (qi < 0) {
-      qDisp.textContent = 'Noch keine Frage aktiv. Klicke auf "Nächste Frage".';
-    } else {
-      const q = quiz.questions[qi];
-      qDisp.innerHTML = `<strong>Frage ${qi+1}/${total}:</strong> ${esc(q.text)}`;
-    }
-  }
+  renderHostTimeline(quiz);
+  renderHostResult();
 }
 
-/* ---------- Next Question ---------- */
-function nextQuestion() {
-  const quiz = QuizStore.get(currentGame.quizId);
-  const total = quiz.questions.length;
-  if (currentGame.currentQuestion >= total - 1) { endGame(); return; }
-
-  // Reveal previous answer first if needed
-  if (currentGame.currentQuestion >= 0) revealAnswer();
-
-  currentGame.currentQuestion++;
-  currentGame.status = 'active';
-  GameStore.set(currentGame.code, currentGame);
-
-  const q = quiz.questions[currentGame.currentQuestion];
-  channel.send('question:show', {
-    questionIdx: currentGame.currentQuestion,
-    question: q,
-    timeLimit: q.timeLimit
-  });
-
-  // Host timer display
-  startHostTimer(q.timeLimit);
-  updateHostControls();
-  renderPlayerList();
-
-  // Update answered count
-  const el = document.getElementById('answered-count');
-  if (el) el.textContent = `0/${currentGame.players.length}`;
-}
-
-function revealAnswer() {
-  if (!currentGame || currentGame.currentQuestion < 0) return;
-  const quiz = QuizStore.get(currentGame.quizId);
-  const qi   = currentGame.currentQuestion;
-  const q    = quiz.questions[qi];
-  const correct = q.answers.filter(a => a.isCorrect).map(a => a.id);
-
-  // Score players
-  const answered = currentGame.answers[qi] || {};
-  currentGame.players.forEach(p => {
-    const ans = answered[p.id];
-    if (!ans) return;
-    if (correct.includes(ans.answerId)) {
-      const bonus = Math.max(0, Math.round(ans.timeLeft * 10)); // time bonus
-      p.score += 100 + bonus;
-    }
-  });
-  GameStore.set(currentGame.code, currentGame);
-
-  channel.send('question:reveal', {
-    questionIdx: qi,
-    correctIds: correct,
-    scores: currentGame.players.map(p => ({ id: p.id, score: p.score }))
-  });
-
-  clearInterval(timerInterval);
-}
-
-function endGame() {
-  clearInterval(timerInterval);
-  revealAnswer();
-  currentGame.status = 'ended';
-  GameStore.set(currentGame.code, currentGame);
-
-  const sorted = [...currentGame.players].sort((a, b) => b.score - a.score);
-  channel.send('game:end', { leaderboard: sorted.map(p => ({ name: p.name, score: p.score })) });
-
-  showHostLeaderboard(sorted);
-}
-
-function showHostLeaderboard(sorted) {
-  const el = document.getElementById('host-leaderboard');
+function renderHostTimeline(quiz) {
+  const el = document.getElementById('host-status-list');
   if (!el) return;
-  el.classList.remove('hidden');
-  const medals = ['🥇','🥈','🥉'];
-  document.getElementById('host-lb-list').innerHTML = sorted.map((p, i) => `
-    <div class="lb-row" style="animation-delay:${i*0.1}s">
-      <span class="lb-rank">${medals[i] || i+1}</span>
-      <span class="lb-name">${esc(p.name)}</span>
-      <span class="lb-score">${p.score} Pkt</span>
-    </div>`).join('');
-  celebrate();
-}
 
-/* ---------- Host Timer ---------- */
-function startHostTimer(seconds) {
-  clearInterval(timerInterval);
-  timeLeft = seconds;
-  updateTimerDisplay(seconds, seconds);
-  timerInterval = setInterval(() => {
-    timeLeft--;
-    updateTimerDisplay(timeLeft, seconds);
-    if (timeLeft <= 0) {
-      clearInterval(timerInterval);
-      channel.send('question:timeup', { questionIdx: currentGame.currentQuestion });
-    }
-  }, 1000);
-}
-
-function updateTimerDisplay(t, total) {
-  const el  = document.getElementById('host-timer-text');
-  const arc = document.getElementById('host-timer-arc');
-  if (el)  el.textContent = t;
-  if (arc) {
-    const r = 44, circ = 2 * Math.PI * r;
-    arc.style.strokeDasharray  = circ;
-    arc.style.strokeDashoffset = circ * (1 - t / total);
-    arc.style.stroke = t <= 5 ? 'var(--red)' : t <= 10 ? 'var(--amber)' : 'var(--purple-l)';
+  if (!quiz?.questions?.length) {
+    el.innerHTML = '<span class="text-muted text-sm">Keine Fragen vorhanden.</span>';
+    return;
   }
-  if (el) el.style.color = t <= 5 ? 'var(--red)' : 'var(--text)';
+
+  if (currentGame.status === 'ready') {
+    el.innerHTML = `
+      <div class="lb-row">
+        <span class="lb-rank">1</span>
+        <span class="lb-name">Quiz vorbereitet</span>
+        <span class="lb-score">${quiz.questions.length} Fragen</span>
+      </div>
+      <div class="lb-row">
+        <span class="lb-rank">▶</span>
+        <span class="lb-name">Spieleransicht öffnen</span>
+        <span class="lb-score">SRH Messemodus</span>
+      </div>`;
+    return;
+  }
+
+  if (currentGame.status === 'active') {
+    el.innerHTML = quiz.questions.map((question, index) => `
+      <div class="lb-row">
+        <span class="lb-rank">${index + 1}</span>
+        <span class="lb-name">${esc(question.text)}</span>
+        <span class="lb-score">${index < currentGame.currentQuestion ? '✓' : index === currentGame.currentQuestion ? 'Live' : 'Offen'}</span>
+      </div>`).join('');
+    return;
+  }
+
+  el.innerHTML = `
+    <div class="lb-row">
+      <span class="lb-rank">🏁</span>
+      <span class="lb-name">Letzter Lauf abgeschlossen</span>
+      <span class="lb-score">${currentGame.lastResult?.score ?? currentGame.currentPlayer?.score ?? 0} Punkte</span>
+    </div>
+    <div class="lb-row">
+      <span class="lb-rank">🔄</span>
+      <span class="lb-name">Neustart möglich</span>
+      <span class="lb-score">Für den nächsten Gast</span>
+    </div>`;
 }
 
-/* =========================================================
-   Lucky Wheel
-   ========================================================= */
-function openWheel() {
-  const overlay = document.getElementById('wheel-overlay');
-  overlay.classList.remove('hidden');
-  document.getElementById('wheel-winner').classList.add('hidden');
-  document.getElementById('btn-spin').disabled = false;
+function renderHostResult() {
+  const el = document.getElementById('host-lb-list');
+  if (!el) return;
 
-  const playerNames = currentGame?.players.map(p => p.name) || [];
-  const names = playerNames.length
-    ? playerNames
-    : ['Spieler 1','Spieler 2','Spieler 3','Spieler 4','Spieler 5'];
+  if (currentGame.status !== 'finished') {
+    el.innerHTML = '<span class="text-muted text-sm">Sobald ein Lauf abgeschlossen wurde, erscheint hier das Ergebnis.</span>';
+    return;
+  }
 
-  const canvas = document.getElementById('wheel-canvas');
-  wheel = new LuckyWheel(canvas, names);
-  wheel.onWinner = name => {
-    const winEl = document.getElementById('wheel-winner');
-    winEl.textContent = `🎉 ${name} gewinnt! 🎉`;
-    winEl.classList.remove('hidden');
-    celebrate();
+  const result = currentGame.lastResult || currentGame.currentPlayer || { name: 'Messegast', score: 0 };
+  el.innerHTML = `
+    <div class="lb-row">
+      <span class="lb-rank">🏆</span>
+      <span class="lb-name">${esc(result.name || 'Messegast')}</span>
+      <span class="lb-score">${result.score} Pkt</span>
+    </div>`;
+}
+
+function presetQuestion(text, timeLimit, answers, correctIndex) {
+  return {
+    id: uuidv4(),
+    text,
+    timeLimit,
+    answers: answers.map((answer, index) => ({
+      id: uuidv4(),
+      text: answer,
+      isCorrect: index === correctIndex
+    }))
   };
 }
 
-function spinWheel() {
-  if (!wheel) return;
-  document.getElementById('btn-spin').disabled = true;
-  document.getElementById('wheel-winner').classList.add('hidden');
-  wheel.spin();
+function getPresetQuizzes() {
+  return [
+    {
+      title: 'SRH Messe-Quiz – Studium & Zukunft',
+      description: 'Vordefinierte Fragen für Gespräche am SRH Messestand.',
+      questions: [
+        presetQuestion('Wofür steht SRH besonders?', 20, ['Leidenschaft fürs Leben', 'Nur Fernstudium', 'Ausschließlich Technik', 'Nur Heidelberg'], 0),
+        presetQuestion('Welches Format passt gut zu einem SRH Messe-Quiz?', 20, ['Einzelmodus direkt am Stand', 'Nur Multiplayer', 'Nur Papierfragebogen', 'Nur Audio ohne Display'], 0),
+        presetQuestion('Was ist für Studieninteressierte besonders wichtig?', 20, ['Persönliche Betreuung', 'Zufällige Inhalte', 'Unklare Bewerbungswege', 'Versteckte Informationen'], 0),
+        presetQuestion('Welche Aussage passt zu einer Messe-Situation?', 20, ['Kurze, klare Fragen funktionieren gut', 'Nur sehr lange Texte sind geeignet', 'Timer sollten nie sichtbar sein', 'Branding ist unwichtig'], 0)
+      ]
+    },
+    {
+      title: 'SRH Messe-Quiz – Campus & Community',
+      description: 'Zweite Vorlage mit lockeren Einstiegsfragen für Messestände.',
+      questions: [
+        presetQuestion('Was hilft auf einer Messe beim Einstieg ins Gespräch?', 15, ['Ein kurzes Quiz', 'Nur Flyer ohne Interaktion', 'Komplizierte Formulare', 'Stille'], 0),
+        presetQuestion('Welche Darstellung ist für Besucher:innen am angenehmsten?', 15, ['Klare Texte und starke Kontraste', 'Sehr kleine Schrift', 'Viele Fachbegriffe', 'Unruhige Navigation'], 0),
+        presetQuestion('Wie sollte ein Messe-Quiz nach einem Durchlauf weitergehen?', 15, ['Direkt neu startbar sein', 'Manuell im Code zurückgesetzt werden', 'Nur nach Browser-Neustart', 'Gar nicht'], 0),
+        presetQuestion('Welche Rolle spielt das SRH Branding?', 15, ['Es sorgt für Wiedererkennung', 'Es ist überflüssig', 'Es darf nur im Footer stehen', 'Es erschwert die Nutzung'], 0)
+      ]
+    }
+  ].map(quiz => ({
+    id: uuidv4(),
+    createdAt: new Date().toISOString(),
+    ...quiz
+  }));
 }
 
-function closeWheel() {
-  document.getElementById('wheel-overlay').classList.add('hidden');
-  wheel = null;
+function upsertPresetQuiz(preset) {
+  const existing = QuizStore.all().find(quiz => quiz.title === preset.title);
+  if (existing) {
+    preset.id = existing.id;
+    preset.createdAt = existing.createdAt;
+  }
+  QuizStore.upsert(preset);
 }
 
-/* =========================================================
-   Init
-   ========================================================= */
+function loadPresetQuizzes() {
+  getPresetQuizzes().forEach(upsertPresetQuiz);
+  renderQuizList();
+  toast('SRH Quiz-Vorlagen geladen ✓', 'success');
+}
+
+function createDemoQuiz() {
+  upsertPresetQuiz(getPresetQuizzes()[0]);
+  renderQuizList();
+  toast('SRH Demo-Quiz geladen ✓', 'success');
+}
+
+window.addEventListener('storage', event => {
+  if (!currentGame?.code || event.key !== 'game_' + currentGame.code) return;
+  syncCurrentGameFromStore();
+});
+
 document.addEventListener('DOMContentLoaded', () => {
   initStars('stars');
   renderQuizList();
 
-  // Keyboard shortcut: Ctrl+S saves quiz
-  document.addEventListener('keydown', e => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 's' && !document.getElementById('view-editor').classList.contains('hidden')) {
-      e.preventDefault();
+  document.addEventListener('keydown', event => {
+    if ((event.ctrlKey || event.metaKey) && event.key === 's' && !document.getElementById('view-editor').classList.contains('hidden')) {
+      event.preventDefault();
       saveQuiz();
     }
   });

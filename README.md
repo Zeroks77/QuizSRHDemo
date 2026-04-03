@@ -1,69 +1,54 @@
-# ⚡ QuizSAH – Interaktives Quiz
+# SRH Quiz – Messemodus
 
-Eine moderne statische Web-App für interaktive Quizze — mit Admin-Ansicht und Spieler-Ansicht, optimiert für Tablets und Smartphones.
+Eine statische Web-App für SRH Messestände: Der Admin bereitet Quizze vor, Besucher:innen spielen direkt im Einzelmodus auf dem Gerät und danach kann das Quiz sofort neu gestartet werden.
 
 🔗 **Live-Demo:** [GitHub Pages](https://zeroks77.github.io/QuizSAHDemo/)
 
----
+## Features
 
-## ✨ Features
+- SRH-inspiriertes Branding für Messeeinsätze
+- Single-User Flow ohne Multiplayer oder Join-Code
+- Admin-Ansicht zum Erstellen, Bearbeiten und Vorbereiten von Quizzen
+- Vordefinierte SRH Quiz-Vorlagen als schneller Einstieg
+- Direkter Neustart nach einem abgeschlossenen Durchlauf
+- Touch-freundliche Spieleransicht mit Timer und Punkteanzeige
 
-- 🎨 **Schönes Dark-Theme** mit Glassmorphismus und Animationen
-- 📱 **Mobil-optimiert** – perfekt für Tablets & Smartphones
-- 🛠 **Admin-Ansicht** – Quiz erstellen, Fragen & Antworten definieren, richtige Antwort markieren
-- 🎮 **Spieler-Ansicht** – Beitritt per QR-Code oder Spielcode
-- ⏱ **Countdown-Timer** mit Zeitbonus für schnelle Antworten
-- 🏆 **Live-Leaderboard** mit Feieranimationen (Konfetti)
-- 🎡 **Glücksrad** für zufällige Gewinner-Auswahl
-- 📷 **QR-Code** für schnellen Spieler-Beitritt
-
-## 🚀 Nutzung
+## Nutzung
 
 ### Admin
-1. Öffne `admin.html`
-2. Erstelle ein neues Quiz oder lade das Demo-Quiz
-3. Füge Fragen und Antworten hinzu, markiere die richtige Antwort
-4. Klicke auf **▶ Starten** – du erhältst einen Spielcode und QR-Code
-5. Für die Demo auf demselben Gerät: öffne die Spieler-Ansicht direkt in einem neuen Tab
-6. Teile alternativ den Code/QR mit Mitspielern
-7. Klicke **Nächste Frage** um das Quiz zu steuern
+1. `admin.html` öffnen
+2. Optional **Vorlagen laden** oder ein eigenes Quiz anlegen
+3. Fragen und Antworten definieren und speichern
+4. Quiz über **Vorbereiten** bereitstellen
+5. Spieleransicht über `play.html` auf demselben Gerät öffnen
 
-### Spieler
-1. Öffne `play.html` (oder scanne den QR-Code)
-2. Gib deinen Namen und den Spielcode ein
-3. Beantworte die Fragen innerhalb der Zeitbegrenzung
+### Spieleransicht
+1. `play.html` öffnen
+2. Vorbereitetes Quiz starten
+3. Fragen beantworten und Ergebnis ansehen
+4. Das Quiz bei Bedarf direkt neu starten
 
-### Glücksrad
-Im Host-Modus kannst du das Glücksrad öffnen (`🎡 Glücksrad`-Button), um einen zufälligen Gewinner zu ermitteln.
+## Technologien
 
-## 🏗 Technologien
+- Reines HTML, CSS und JavaScript
+- `localStorage` für Quiz- und Spielstatus
+- `canvas-confetti` für Abschlussanimationen
 
-- **Reines HTML/CSS/JavaScript** – kein Build-Schritt notwendig
-- **localStorage** für Quiz-Datenspeicherung
-- **BroadcastChannel API** für Echtzeit-Synchronisierung zwischen Browser-Tabs
-- **Canvas API** für das Glücksrad
-- **qrcode.js** für QR-Code-Generierung
-- **canvas-confetti** für Feieranimationen
-
-## 📁 Struktur
+## Struktur
 
 ```
 ├── index.html       – Startseite
-├── admin.html       – Admin / Quiz-Host
-├── play.html        – Spieler-Ansicht
+├── admin.html       – Admin / Quiz-Vorbereitung
+├── play.html        – Spieleransicht im Einzelmodus
 ├── css/
 │   └── style.css    – Globale Stile
 └── js/
-    ├── common.js    – Gemeinsame Hilfsfunktionen
+    ├── common.js    – Gemeinsame Hilfsfunktionen & Storage
     ├── admin.js     – Admin-Logik
     ├── play.js      – Spieler-Logik
     └── wheel.js     – Glücksrad-Komponente
 ```
 
-## 🌍 Deployment
+## Deployment
 
 Das Repository enthält einen GitHub-Pages-Workflow. Bei einem Push auf `main` wird die statische Seite automatisch nach GitHub Pages deployed.
-
-## ℹ️ Hinweis
-
-Da dies eine reine statische App (ohne Backend) ist, funktioniert die Demo am zuverlässigsten im **gleichen Browser** auf **demselben Gerät** (verschiedene Tabs). Für echten Multiplayer-Betrieb über mehrere Geräte wäre ein Backend (z.B. WebSockets) erforderlich.
