@@ -4,7 +4,6 @@
 
 let currentQuiz = null;
 let currentGame = null;
-let hostSyncInterval = null;
 
 function showView(id) {
   document.querySelectorAll('.view-section').forEach(section => section.classList.add('hidden'));
@@ -12,7 +11,6 @@ function showView(id) {
 }
 
 function renderQuizList() {
-  stopHostSync();
   showView('view-list');
   const list = QuizStore.all();
   const el = document.getElementById('quiz-list');
@@ -288,18 +286,6 @@ async function copyPlayerLink() {
   window.prompt('Spieler-Link kopieren:', url);
 }
 
-function startHostSync() {
-  stopHostSync();
-  hostSyncInterval = window.setInterval(syncCurrentGameFromStore, 1000);
-}
-
-function stopHostSync() {
-  if (hostSyncInterval) {
-    clearInterval(hostSyncInterval);
-    hostSyncInterval = null;
-  }
-}
-
 function syncCurrentGameFromStore() {
   if (!currentGame?.code) return;
   const latest = GameStore.get(currentGame.code);
@@ -312,7 +298,6 @@ function renderHostView(quiz) {
   document.getElementById('host-quiz-title').textContent = quiz?.title || 'SRH Messe-Quiz';
   document.getElementById('host-quiz-description').textContent = quiz?.description || 'Bereit für den nächsten Messegast.';
   updateHostControls();
-  startHostSync();
 }
 
 function updateHostControls() {
@@ -422,7 +407,8 @@ function renderHostResult() {
     </div>`;
 }
 
-function presetQuestion(text, timeLimit, answers, correctIndex) {
+function presetQuestion(text, timeLimit, answers, correctIndices = [0]) {
+  const correctList = Array.isArray(correctIndices) ? correctIndices : [correctIndices];
   return {
     id: uuidv4(),
     text,
@@ -430,7 +416,7 @@ function presetQuestion(text, timeLimit, answers, correctIndex) {
     answers: answers.map((answer, index) => ({
       id: uuidv4(),
       text: answer,
-      isCorrect: index === correctIndex
+      isCorrect: correctList.includes(index)
     }))
   };
 }

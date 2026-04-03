@@ -45,8 +45,7 @@ Eine statische Web-App für SRH Messestände: Der Admin bereitet Quizze vor, Bes
 └── js/
     ├── common.js    – Gemeinsame Hilfsfunktionen & Storage
     ├── admin.js     – Admin-Logik
-    ├── play.js      – Spieler-Logik
-    └── wheel.js     – Glücksrad-Komponente
+    └── play.js      – Spieler-Logik
 ```
 
 ## Deployment
