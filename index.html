@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuizSAH – Interaktives Quiz</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .pulse-ring {
+      position: absolute;
+      border-radius: 50%;
+      animation: ringOut 2s ease-out infinite;
+      border: 2px solid rgba(124,58,237,.4);
+    }
+    @keyframes ringOut {
+      0%   { transform: scale(1); opacity: .6; }
+      100% { transform: scale(2.5); opacity: 0; }
+    }
+    .hero-visual {
+      position: relative;
+      width: 120px; height: 120px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 2rem;
+    }
+    .hero-visual .pulse-ring:nth-child(1) { width:100%;height:100%;animation-delay:0s; }
+    .hero-visual .pulse-ring:nth-child(2) { width:100%;height:100%;animation-delay:.6s; }
+    .hero-visual .pulse-ring:nth-child(3) { width:100%;height:100%;animation-delay:1.2s; }
+    .hero-logo-icon {
+      position: relative; z-index: 2;
+      width: 80px; height: 80px;
+      background: var(--grad-primary);
+      border-radius: 28px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem;
+      box-shadow: 0 8px 40px rgba(124,58,237,.5);
+    }
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .3rem;
+      color: var(--muted);
+      font-size: .8rem;
+      animation: bounce 2s ease-in-out infinite;
+    }
+    @keyframes bounce {
+      0%,100% { transform: translateX(-50%) translateY(0); }
+      50%      { transform: translateX(-50%) translateY(8px); }
+    }
+    .how-it-works {
+      padding: 4rem 1rem;
+      position: relative; z-index: 1;
+    }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .step {
+      text-align: center;
+      padding: 2rem 1.5rem;
+    }
+    .step-num {
+      width: 3rem; height: 3rem;
+      background: var(--grad-primary);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 1.2rem;
+      margin: 0 auto 1rem;
+    }
+    .step h3 { font-size: 1.05rem; margin-bottom: .4rem; }
+    .step p  { font-size: .875rem; color: var(--muted); }
+    .cta-section {
+      text-align: center;
+      padding: 4rem 1rem 6rem;
+      position: relative; z-index: 1;
+    }
+    .cta-section h2 {
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      font-weight: 900;
+      margin-bottom: 1rem;
+    }
+    .cta-section p { color: var(--muted); margin-bottom: 2rem; max-width: 480px; margin-left:auto;margin-right:auto; }
+    footer {
+      border-top: 1px solid var(--glass-border);
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--muted);
+      font-size: .85rem;
+      position: relative; z-index: 1;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Starfield -->
+<div class="stars-bg" id="stars"></div>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <span class="logo">⚡ QuizSAH</span>
+  <div class="nav-links">
+    <a href="admin.html" class="btn btn-ghost btn-sm">🛠 Admin</a>
+    <a href="play.html"  class="btn btn-primary btn-sm">▶ Mitspielen</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero-section">
+  <div class="hero-visual">
+    <div class="pulse-ring"></div>
+    <div class="pulse-ring"></div>
+    <div class="pulse-ring"></div>
+    <div class="hero-logo-icon">⚡</div>
+  </div>
+
+  <div class="hero-badge">🎉 Interaktiv · Mobil-optimiert · Kostenlos</div>
+
+  <h1 class="hero-title">
+    Dein Quiz.<br><span class="accent">Unvergesslich.</span>
+  </h1>
+
+  <p class="hero-sub">
+    Erstelle spannende Quizze mit Animationen, Glücksrad und QR-Code-Beitritt —
+    perfekt für Tablets und Smartphones.
+  </p>
+
+  <div class="hero-cta">
+    <a href="admin.html" class="btn btn-primary btn-lg">🛠 Quiz erstellen</a>
+    <a href="play.html"  class="btn btn-ghost btn-lg">▶ Quiz spielen</a>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Mehr entdecken</span>
+    <span>↓</span>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="container">
+  <div class="features-grid">
+    <div class="card feature-card">
+      <span class="feature-icon">🎨</span>
+      <h3>Schönes Design</h3>
+      <p>Dunkles Theme mit lebhaften Farben und flüssigen Animationen.</p>
+    </div>
+    <div class="card feature-card">
+      <span class="feature-icon">📱</span>
+      <h3>Mobil-optimiert</h3>
+      <p>Perfekt für Tablets und Smartphones, responsiv auf allen Bildschirmgrößen.</p>
+    </div>
+    <div class="card feature-card">
+      <span class="feature-icon">🎡</span>
+      <h3>Glücksrad</h3>
+      <p>Animiertes Glücksrad für das zufällige Auswählen von Gewinnern.</p>
+    </div>
+    <div class="card feature-card">
+      <span class="feature-icon">📷</span>
+      <h3>QR-Code Beitritt</h3>
+      <p>Spieler treten über QR-Code bei — schnell und einfach.</p>
+    </div>
+    <div class="card feature-card">
+      <span class="feature-icon">⏱</span>
+      <h3>Timer & Punkte</h3>
+      <p>Countdown-Timer mit Zeitbonus für schnelle Antworten.</p>
+    </div>
+    <div class="card feature-card">
+      <span class="feature-icon">🏆</span>
+      <h3>Leaderboard</h3>
+      <p>Live-Rangliste mit Feieranimationen für die Sieger.</p>
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section class="how-it-works container">
+  <h2 class="text-center" style="font-size:1.8rem;font-weight:900;margin-bottom:.5rem">So funktioniert's</h2>
+  <p class="text-center text-muted">In drei einfachen Schritten zum interaktiven Quiz</p>
+  <div class="steps">
+    <div class="card step">
+      <div class="step-num">1</div>
+      <h3>Quiz erstellen</h3>
+      <p>Gehe zu Admin und erstelle ein Quiz mit beliebig vielen Fragen und Antworten.</p>
+    </div>
+    <div class="card step">
+      <div class="step-num">2</div>
+      <h3>Spieler einladen</h3>
+      <p>Teile den QR-Code oder Spielcode mit deinen Mitspielern.</p>
+    </div>
+    <div class="card step">
+      <div class="step-num">3</div>
+      <h3>Los geht's!</h3>
+      <p>Starte das Quiz und genieße die Animationen und das spannende Leaderboard.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2>Bereit loszulegen? 🚀</h2>
+  <p>Erstelle dein erstes Quiz kostenlos — keine Anmeldung erforderlich!</p>
+  <div class="flex gap-2 justify-center wrap">
+    <a href="admin.html" class="btn btn-primary btn-lg">Quiz erstellen</a>
+    <a href="play.html"  class="btn btn-secondary btn-lg">Jetzt mitspielen</a>
+  </div>
+</section>
+
+<footer>
+  <p>⚡ QuizSAH – Interaktive Quiz-App · Erstellt für GitHub Pages · Open Source</p>
+</footer>
+
+<!-- Scripts -->
+<script src="js/common.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => initStars('stars'));
+</script>
+</body>
+</html>

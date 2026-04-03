@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mitspielen – QuizSAH</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <!-- Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <style>
+    /* Override body to allow full-height flex layout */
+    body { display: flex; flex-direction: column; }
+
+    /* Large answer buttons for touch */
+    .answer-option {
+      min-height: 72px;
+      font-size: 1rem;
+      align-items: center;
+      border: none;
+      background: var(--glass);
+      cursor: pointer;
+      text-align: left;
+      transition: transform .15s, background .2s, border-color .2s;
+      -webkit-tap-highlight-color: transparent;
+      border: 2px solid var(--glass-border);
+    }
+    .answer-option:active:not(:disabled) { transform: scale(.97); }
+
+    /* Color-coded answer options */
+    .answer-option:nth-child(1) .answer-letter { background: #7c3aed; color:#fff; }
+    .answer-option:nth-child(2) .answer-letter { background: #db2777; color:#fff; }
+    .answer-option:nth-child(3) .answer-letter { background: #f59e0b; color:#fff; }
+    .answer-option:nth-child(4) .answer-letter { background: #0d9488; color:#fff; }
+    .answer-option:nth-child(5) .answer-letter { background: #2563eb; color:#fff; }
+    .answer-option:nth-child(6) .answer-letter { background: #dc2626; color:#fff; }
+
+    /* Question text big for readability */
+    #q-text {
+      font-size: clamp(1.15rem, 4vw, 1.6rem);
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.3;
+      padding: 1rem .5rem;
+    }
+
+    /* Full-height screens */
+    .screen { flex: 1; display: flex; flex-direction: column; }
+
+    /* Score popup text */
+    .text-primary { color: var(--purple-l); }
+
+    /* Feedback bar */
+    #q-feedback {
+      background: rgba(124,58,237,.15);
+      border: 1px solid rgba(124,58,237,.3);
+      border-radius: var(--r);
+      padding: .65rem 1rem;
+      text-align: center;
+      font-weight: 600;
+      color: var(--purple-l);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Starfield -->
+<div class="stars-bg" id="stars"></div>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <a href="index.html" class="logo">⚡ QuizSAH</a>
+  <div class="nav-links">
+    <a href="admin.html" class="btn btn-ghost btn-sm">🛠 Admin</a>
+  </div>
+</nav>
+
+<div id="play-root" style="flex:1;display:flex;flex-direction:column">
+
+  <!-- ======================================================
+       SCREEN: Join
+       ====================================================== -->
+  <div id="screen-join" class="screen hidden">
+    <div class="join-screen">
+      <div class="join-logo">⚡ QuizSAH</div>
+      <p class="text-muted text-center">Gib deinen Namen und den Spielcode ein, um beizutreten.</p>
+
+      <div class="card join-card">
+        <div class="form-group">
+          <label class="form-label">Spielcode</label>
+          <input id="inp-code" type="text" placeholder="z.B. ABC123"
+            maxlength="8" autocomplete="off" autocapitalize="characters"
+            style="font-size:1.4rem;letter-spacing:.2em;text-align:center;font-weight:800;text-transform:uppercase" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Dein Name</label>
+          <input id="inp-name" type="text" placeholder="Nickname eingeben…"
+            maxlength="24" autocomplete="off" />
+        </div>
+        <button class="btn btn-primary w-full btn-lg" onclick="joinGame()">
+          ▶ Beitreten
+        </button>
+      </div>
+
+      <p class="text-muted text-sm text-center">
+        Keinen Code? Bitte den Quiz-Host um den Spielcode oder QR-Code.
+      </p>
+    </div>
+  </div>
+
+  <!-- ======================================================
+       SCREEN: Waiting
+       ====================================================== -->
+  <div id="screen-waiting" class="screen hidden">
+    <div class="waiting-screen">
+      <div class="waiting-pulse">⚡</div>
+      <h2 style="font-size:1.6rem;font-weight:900">Warte auf Start…</h2>
+      <p class="text-muted">Hallo, <strong id="waiting-name"></strong>! Du bist beigetreten.</p>
+      <div class="card" style="text-align:center;min-width:240px">
+        <div class="game-code-label">Spielcode</div>
+        <div class="game-code-display" id="waiting-code">––––</div>
+      </div>
+      <p class="text-muted text-sm">Der Host startet die Runde bald. Bleib bereit! 🎯</p>
+    </div>
+  </div>
+
+  <!-- ======================================================
+       SCREEN: Question
+       ====================================================== -->
+  <div id="screen-question" class="screen hidden" style="padding:1rem;gap:.75rem;position:relative;z-index:1">
+
+    <!-- Top bar: progress + score + timer -->
+    <div class="question-header-bar">
+      <div class="flex flex-col gap-1" style="min-width:0">
+        <div class="flex items-center gap-1">
+          <span class="badge badge-purple" id="q-progress">1/5</span>
+        </div>
+        <div class="progress-bar" style="width:180px;max-width:100%">
+          <div class="progress-bar-fill" id="q-progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+
+      <!-- Timer Ring -->
+      <div class="timer-ring" style="width:72px;height:72px;flex-shrink:0">
+        <svg width="72" height="72" viewBox="0 0 72 72">
+          <circle cx="36" cy="36" r="28" fill="none"
+            stroke="var(--glass-border)" stroke-width="5"/>
+          <circle id="timer-arc" cx="36" cy="36" r="28" fill="none"
+            stroke="var(--purple-l)" stroke-width="5" stroke-linecap="round"
+            style="transition:stroke-dashoffset .9s linear, stroke .3s"/>
+        </svg>
+        <span class="timer-text" id="timer-text">30</span>
+      </div>
+
+      <div class="score-pill">
+        ⭐ <span id="q-score">0</span>
+      </div>
+    </div>
+
+    <!-- Question text -->
+    <div class="card" style="padding:.75rem 1rem">
+      <p id="q-text">Frage wird geladen…</p>
+    </div>
+
+    <!-- Answers grid -->
+    <div id="q-answers" class="answers-list" style="flex:1;min-height:200px"></div>
+
+    <!-- Feedback bar (shown after answering) -->
+    <div id="q-feedback" class="hidden"></div>
+
+  </div>
+
+  <!-- ======================================================
+       SCREEN: Final Results
+       ====================================================== -->
+  <div id="screen-final" class="screen hidden">
+    <div class="result-screen">
+      <div class="result-icon" id="final-icon">🏆</div>
+      <h2 style="font-size:2rem;font-weight:900">Spielende!</h2>
+      <div class="card" style="text-align:center;min-width:240px">
+        <div class="text-muted text-sm">Dein Ergebnis</div>
+        <div style="font-size:3rem;font-weight:900;color:var(--amber)" id="final-score">0</div>
+        <div class="text-muted" id="final-rank">Punkte</div>
+      </div>
+
+      <div style="width:100%;max-width:480px">
+        <h3 class="section-title text-center">🏆 Leaderboard</h3>
+        <div id="final-lb" class="leaderboard"></div>
+      </div>
+
+      <div class="flex gap-2 wrap justify-center">
+        <a href="play.html" class="btn btn-primary">🔄 Nochmal spielen</a>
+        <a href="index.html" class="btn btn-ghost">🏠 Startseite</a>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /play-root -->
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<!-- Scripts -->
+<script src="js/common.js"></script>
+<script src="js/play.js"></script>
+</body>
+</html>
