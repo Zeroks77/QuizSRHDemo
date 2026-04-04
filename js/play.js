@@ -348,7 +348,7 @@ function renderQuestionAnswers(question) {
         <span class="quiz-answer-badge">${letter}</span>
         <div class="quiz-answer-body">
           <strong>${esc(answer.text)}</strong>
-          <p>${answer.isCorrect ? 'Richtige Option' : 'Antwortoption'}</p>
+          <p>Antwortoption</p>
         </div>
       </button>
     `;
@@ -394,10 +394,11 @@ function updateQuizSubmitButton(question) {
   if (!button || !state) return;
 
   const isMulti = isMultiAnswerQuestion(question);
-  if (isMulti && !state.answered) {
-    button.disabled = state.selectedIndexes.length === 0;
-    button.textContent = 'Antwort pruefen';
-  }
+  const showButton = isMulti && !state.answered;
+
+  button.classList.toggle('hidden', !showButton);
+  button.disabled = !showButton || state.selectedIndexes.length === 0;
+  button.textContent = 'Antwort pruefen';
 }
 
 function startQuizTimer(seconds) {
