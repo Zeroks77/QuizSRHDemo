@@ -11,7 +11,7 @@ Eine statische Web-App für SRH Messestände: Der Admin bereitet Quizze vor, Bes
 - Admin-Ansicht zum Erstellen, Bearbeiten und Vorbereiten von Quizzen
 - Vordefinierte SRH Quiz-Vorlagen als schneller Einstieg
 - Direkter Neustart nach einem abgeschlossenen Durchlauf
-- Touch-freundliche Spieleransicht mit Timer und Punkteanzeige
+- Touch-freundliche Spieleransicht mit Timer, direktem Feedback und Mehrfachauswahl
 
 ## Nutzung
 

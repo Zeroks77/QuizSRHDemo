@@ -123,17 +123,18 @@
           <span class="timer-text" id="timer-text">30</span>
         </div>
 
-        <div class="score-pill">⭐ <span id="q-score">0</span></div>
+        <div class="badge badge-amber">SRH Quiz</div>
       </div>
 
       <div class="card" style="padding:.75rem 1rem;margin-top:1rem">
         <p id="q-text">Frage wird geladen…</p>
       </div>
 
+      <div id="q-selection-hint" class="selection-hint" style="margin-top:.75rem"></div>
       <div id="q-answers" class="answers-list" style="flex:1;min-height:200px;margin-top:1rem"></div>
       <div id="q-feedback" class="hidden" style="margin-top:1rem"></div>
       <div class="question-actions" style="margin-top:1rem">
-        <button id="btn-next-step" class="btn btn-primary hidden" type="button">▶ Weiter</button>
+        <button id="btn-next-step" class="btn btn-primary hidden" type="button">Antworten prüfen</button>
       </div>
     </div>
   </div>
@@ -143,7 +144,7 @@
       <div class="result-icon" id="final-icon">🏆</div>
       <h2 style="font-size:2rem;font-weight:900">SRH Quiz beendet</h2>
       <div class="card" style="text-align:center;min-width:240px;margin-top:1rem">
-        <div class="text-muted text-sm">Dein Ergebnis</div>
+        <div class="text-muted text-sm">Richtige Antworten</div>
         <div style="font-size:3rem;font-weight:900;color:var(--amber)" id="final-score">0</div>
         <div class="text-muted" id="final-rank">Danke fürs Mitmachen!</div>
       </div>

@@ -4,13 +4,20 @@
 
 let currentGame = null;
 let quizData = null;
-let score = 0;
+let correctAnswers = 0;
 let answered = false;
 let timerInterval = null;
+let autoAdvanceTimeout = null;
 let timeLeft = 0;
 let currentQIdx = -1;
+let selectedAnswerIds = [];
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
+const AUTO_ADVANCE_DELAY = 1800;
+
+function getResultCount(result) {
+  return result?.correctAnswers ?? result?.score ?? 0;
+}
 
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(screen => screen.classList.add('hidden'));
@@ -30,7 +37,7 @@ function initPlay() {
     return;
   }
 
-  score = currentGame.currentPlayer?.score || 0;
+  correctAnswers = getResultCount(currentGame.currentPlayer);
   showScreen('screen-start');
   document.getElementById('start-title').textContent = quizData.title;
   document.getElementById('start-description').textContent = quizData.description || 'Bereit für ein kurzes SRH Messe-Quiz.';
@@ -61,11 +68,11 @@ function startQuizRun() {
   document.getElementById('btn-start-quiz')?.removeAttribute('disabled');
   currentGame.status = 'active';
   currentGame.currentQuestion = 0;
-  currentGame.currentPlayer = { name: 'Messegast', score: 0 };
+  currentGame.currentPlayer = { name: 'Messegast', correctAnswers: 0 };
   currentGame.answers = {};
   currentGame.finishedAt = null;
   currentGame.lastResult = null;
-  score = 0;
+  correctAnswers = 0;
   saveGameState();
   showQuestion(quizData.questions[0], 0, quizData.questions.length);
 }
@@ -74,13 +81,14 @@ function showQuestion(question, qi, total) {
   showScreen('screen-question');
   currentQIdx = qi;
   answered = false;
+  selectedAnswerIds = [];
   clearInterval(timerInterval);
+  clearTimeout(autoAdvanceTimeout);
   document.getElementById('q-feedback').classList.add('hidden');
-  document.getElementById('btn-next-step').classList.add('hidden');
+  document.getElementById('q-feedback').classList.remove('feedback-correct', 'feedback-wrong');
 
   document.getElementById('q-progress').textContent = `${qi + 1} / ${total}`;
   document.getElementById('q-progress-fill').style.width = `${((qi + 1) / total) * 100}%`;
-  document.getElementById('q-score').textContent = score;
   document.getElementById('q-text').textContent = question.text;
 
   const grid = document.getElementById('q-answers');
@@ -89,6 +97,9 @@ function showQuestion(question, qi, total) {
       <span class="answer-letter">${LETTERS[index]}</span>
       <span>${esc(answer.text)}</span>
     </button>`).join('');
+
+  updateSelectionHint(question);
+  configureQuestionAction(question);
 
   timeLeft = question.timeLimit || 30;
   startTimer(timeLeft, question.timeLimit || 30);
@@ -102,7 +113,7 @@ function startTimer(seconds, total) {
     if (timeLeft <= 0) {
       clearInterval(timerInterval);
       if (!answered) {
-        finishQuestion(null);
+        finishQuestion(selectedAnswerIds);
       }
     }
   }, 1000);
@@ -124,52 +135,61 @@ function updateTimerUI(t, total) {
 
 function submitAnswer(answerId) {
   if (answered) return;
-  finishQuestion(answerId);
+  const question = quizData.questions[currentQIdx];
+  if (isMultiAnswerQuestion(question)) {
+    toggleAnswerSelection(answerId);
+    updateQuestionActionState(question);
+    return;
+  }
+  finishQuestion([answerId]);
 }
 
-function finishQuestion(answerId) {
+function finishQuestion(answerIds = []) {
   answered = true;
   clearInterval(timerInterval);
+  clearTimeout(autoAdvanceTimeout);
   disableAnswers();
+  const actionButton = document.getElementById('btn-next-step');
+  actionButton.classList.add('hidden');
 
   const question = quizData.questions[currentQIdx];
   const correctIds = question.answers.filter(answer => answer.isCorrect).map(answer => answer.id);
+  const uniqueAnswerIds = Array.isArray(answerIds)
+    ? [...new Set(answerIds)]
+    : answerIds
+      ? [answerIds]
+      : [];
+  const isCorrect = uniqueAnswerIds.length > 0
+    && uniqueAnswerIds.length === correctIds.length
+    && uniqueAnswerIds.every(answerId => correctIds.includes(answerId));
 
   currentGame.answers[currentQIdx] = {
-    answerId,
-    timeLeft: Math.max(timeLeft, 0)
+    answerIds: uniqueAnswerIds,
+    timeLeft: Math.max(timeLeft, 0),
+    isCorrect
   };
 
-  if (answerId) {
-    document.getElementById(`ans-${answerId}`)?.classList.add('selected');
-  }
-
-  if (answerId && correctIds.includes(answerId)) {
-    const gained = calculateQuestionScore(Math.max(timeLeft, 0));
-    score += gained;
-    currentGame.currentPlayer.score = score;
-    showScorePopup('+' + gained);
+  if (isCorrect) {
+    correctAnswers += 1;
+    currentGame.currentPlayer.correctAnswers = correctAnswers;
   }
 
   revealAnswers(correctIds);
   saveGameState();
-  showQuestionFeedback(correctIds.includes(answerId));
+  showQuestionFeedback(isCorrect);
 }
 
 function showQuestionFeedback(isCorrect) {
   const feedback = document.getElementById('q-feedback');
-  const btn = document.getElementById('btn-next-step');
   const isLast = currentQIdx >= quizData.questions.length - 1;
+  const nextStep = isLast ? finishQuiz : goToNextQuestion;
 
   feedback.textContent = isCorrect
-    ? 'Richtig! Sehr gut gemacht.'
-    : 'Auflösung angezeigt – weiter zur nächsten Frage.';
+    ? (isLast ? 'Richtig! Das Ergebnis wird eingeblendet …' : 'Richtig! Die nächste Frage startet gleich …')
+    : (isLast ? 'Nicht ganz. Das Ergebnis wird eingeblendet …' : 'Nicht ganz. Die nächste Frage startet gleich …');
+  feedback.classList.add(isCorrect ? 'feedback-correct' : 'feedback-wrong');
   feedback.classList.remove('hidden');
-
-  btn.textContent = isLast ? '🏁 Ergebnis anzeigen' : '▶ Weiter';
-  btn.onclick = isLast ? finishQuiz : goToNextQuestion;
-  btn.classList.remove('hidden');
-  document.getElementById('q-score').textContent = score;
+  autoAdvanceTimeout = setTimeout(nextStep, AUTO_ADVANCE_DELAY);
 }
 
 function disableAnswers() {
@@ -198,6 +218,60 @@ function revealAnswers(correctIds) {
   });
 }
 
+function isMultiAnswerQuestion(question) {
+  return question.answers.filter(answer => answer.isCorrect).length > 1;
+}
+
+function updateSelectionHint(question) {
+  const hint = document.getElementById('q-selection-hint');
+  if (!hint) return;
+  if (isMultiAnswerQuestion(question)) {
+    hint.textContent = 'Mehrfachauswahl: Markiere alle passenden Antworten und tippe dann auf „Antworten prüfen“.';
+    hint.classList.remove('hidden');
+    return;
+  }
+  hint.textContent = 'Einfach die passende Antwort antippen.';
+  hint.classList.remove('hidden');
+}
+
+function configureQuestionAction(question) {
+  const actionButton = document.getElementById('btn-next-step');
+  if (!actionButton) return;
+  if (!isMultiAnswerQuestion(question)) {
+    actionButton.classList.add('hidden');
+    actionButton.disabled = true;
+    actionButton.onclick = null;
+    return;
+  }
+  actionButton.textContent = 'Antworten prüfen';
+  actionButton.onclick = confirmSelectedAnswers;
+  actionButton.disabled = true;
+  actionButton.classList.remove('hidden');
+}
+
+function updateQuestionActionState(question) {
+  const actionButton = document.getElementById('btn-next-step');
+  if (!actionButton || answered || !isMultiAnswerQuestion(question)) return;
+  actionButton.disabled = selectedAnswerIds.length === 0;
+}
+
+function toggleAnswerSelection(answerId) {
+  const selectedIndex = selectedAnswerIds.indexOf(answerId);
+  const option = document.getElementById(`ans-${answerId}`);
+  if (selectedIndex >= 0) {
+    selectedAnswerIds.splice(selectedIndex, 1);
+    option?.classList.remove('selected');
+    return;
+  }
+  selectedAnswerIds.push(answerId);
+  option?.classList.add('selected');
+}
+
+function confirmSelectedAnswers() {
+  if (answered || !selectedAnswerIds.length) return;
+  finishQuestion(selectedAnswerIds);
+}
+
 function goToNextQuestion() {
   const nextIndex = currentQIdx + 1;
   currentGame.currentQuestion = nextIndex;
@@ -210,7 +284,8 @@ function finishQuiz() {
   currentGame.finishedAt = new Date().toISOString();
   currentGame.lastResult = {
     name: currentGame.currentPlayer?.name || 'Messegast',
-    score
+    correctAnswers,
+    totalQuestions: quizData.questions.length
   };
   saveGameState();
   showFinal();
@@ -218,8 +293,8 @@ function finishQuiz() {
 
 function showFinal() {
   showScreen('screen-final');
-  const maxScore = quizData.questions.reduce((sum, question) => sum + calculateQuestionScore(question.timeLimit || 30), 0);
-  const ratio = maxScore ? score / maxScore : 0;
+  const totalQuestions = quizData.questions.length;
+  const ratio = totalQuestions ? correctAnswers / totalQuestions : 0;
   const icon = ratio >= 0.75 ? '🏆' : ratio >= 0.45 ? '👏' : '✨';
   const message = ratio >= 0.75
     ? 'Starker Messe-Run!'
@@ -228,7 +303,7 @@ function showFinal() {
       : 'Danke fürs Mitmachen!';
 
   document.getElementById('final-icon').textContent = icon;
-  document.getElementById('final-score').textContent = score;
+  document.getElementById('final-score').textContent = `${correctAnswers} / ${totalQuestions}`;
   document.getElementById('final-rank').textContent = message;
   document.getElementById('final-lb').innerHTML = `
     <div class="lb-row">
@@ -239,7 +314,7 @@ function showFinal() {
     <div class="lb-row">
       <span class="lb-rank">⭐</span>
       <span class="lb-name">Dein Ergebnis</span>
-      <span class="lb-score">${score} Pkt</span>
+      <span class="lb-score">${correctAnswers} richtig</span>
     </div>`;
 
   celebrate();
@@ -254,34 +329,13 @@ function restartQuiz() {
 
   currentGame.status = 'ready';
   currentGame.currentQuestion = -1;
-  currentGame.currentPlayer = { name: 'Messegast', score: 0 };
+  currentGame.currentPlayer = { name: 'Messegast', correctAnswers: 0 };
   currentGame.answers = {};
   currentGame.finishedAt = null;
   currentGame.lastResult = null;
-  score = 0;
+  correctAnswers = 0;
   saveGameState();
   initPlay();
-}
-
-function showScorePopup(text) {
-  const el = document.createElement('div');
-  el.className = 'score-popup';
-  el.textContent = text;
-  el.style.cssText = `
-    position:fixed; top:30%; left:50%; transform:translateX(-50%);
-    font-size:3rem; font-weight:900; color:var(--green);
-    animation: scorePopAnim 1.5s ease forwards;
-    z-index:500; pointer-events:none;
-    text-shadow: 0 2px 20px rgba(34,197,94,.6);
-  `;
-  document.body.appendChild(el);
-  if (!document.getElementById('score-pop-style')) {
-    const style = document.createElement('style');
-    style.id = 'score-pop-style';
-    style.textContent = '@keyframes scorePopAnim { 0%{opacity:1;transform:translateX(-50%) scale(1)} 100%{opacity:0;transform:translateX(-50%) scale(1.5) translateY(-60px)} }';
-    document.head.appendChild(style);
-  }
-  setTimeout(() => el.remove(), 1500);
 }
 
 document.addEventListener('DOMContentLoaded', () => {

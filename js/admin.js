@@ -5,6 +5,10 @@
 let currentQuiz = null;
 let currentGame = null;
 
+function getResultCount(result) {
+  return result?.correctAnswers ?? result?.score ?? 0;
+}
+
 function showView(id) {
   document.querySelectorAll('.view-section').forEach(section => section.classList.add('hidden'));
   document.getElementById(id)?.classList.remove('hidden');
@@ -92,6 +96,7 @@ function renderQuestions() {
       </div>
 
       <div class="section-title" style="font-size:.8rem">Antworten</div>
+      <div class="form-hint" style="margin-bottom:.75rem">Mehrfachauswahl ist möglich – markiere einfach mehrere Antworten als richtig.</div>
       <div class="answers-grid" id="answers-grid-${qi}">
         ${q.answers.map((a, ai) => renderAnswerEditor(qi, ai, a)).join('')}
       </div>
@@ -218,10 +223,10 @@ function buildGameState(quizId, existingCode = generateGameCode()) {
     status: 'ready',
     currentQuestion: -1,
     totalQuestions: quiz?.questions?.length || 0,
-    currentPlayer: {
-      name: 'Messegast',
-      score: 0
-    },
+      currentPlayer: {
+        name: 'Messegast',
+        correctAnswers: 0
+      },
     answers: {},
     preparedAt: new Date().toISOString(),
     finishedAt: null,
@@ -327,7 +332,7 @@ function updateHostControls() {
   document.getElementById('game-status').textContent = statusMap[currentGame.status] || 'Unbekannt';
   document.getElementById('question-count-stat').textContent = String(total);
   document.getElementById('progress-stat').textContent = currentGame.status === 'ready' ? '0 / ' + total : `${activeIndex} / ${total}`;
-  document.getElementById('score-stat').textContent = `${currentGame.currentPlayer?.score || 0}`;
+  document.getElementById('score-stat').textContent = `${getResultCount(currentGame.currentPlayer)}`;
   document.getElementById('host-progress').style.width = `${progress}%`;
 
   const display = document.getElementById('host-q-display');
@@ -341,7 +346,7 @@ function updateHostControls() {
       ? `<strong>Aktuelle Frage ${currentGame.currentQuestion + 1}/${total}:</strong> ${esc(question.text)}`
       : 'Das Quiz läuft gerade.';
   } else {
-    display.innerHTML = `<strong>Abgeschlossen:</strong> ${currentGame.lastResult?.score ?? currentGame.currentPlayer?.score ?? 0} Punkte erzielt.`;
+    display.innerHTML = `<strong>Abgeschlossen:</strong> ${getResultCount(currentGame.lastResult || currentGame.currentPlayer)} von ${quiz.questions.length} Antworten richtig.`;
   }
 
   renderHostTimeline(quiz);
@@ -386,7 +391,7 @@ function renderHostTimeline(quiz) {
     <div class="lb-row">
       <span class="lb-rank">🏁</span>
       <span class="lb-name">Letzter Lauf abgeschlossen</span>
-      <span class="lb-score">${currentGame.lastResult?.score ?? currentGame.currentPlayer?.score ?? 0} Punkte</span>
+      <span class="lb-score">${getResultCount(currentGame.lastResult || currentGame.currentPlayer)} richtig</span>
     </div>
     <div class="lb-row">
       <span class="lb-rank">🔄</span>
@@ -404,12 +409,12 @@ function renderHostResult() {
     return;
   }
 
-  const result = currentGame.lastResult || currentGame.currentPlayer || { name: 'Messegast', score: 0 };
+  const result = currentGame.lastResult || currentGame.currentPlayer || { name: 'Messegast', correctAnswers: 0 };
   el.innerHTML = `
     <div class="lb-row">
       <span class="lb-rank">🏆</span>
       <span class="lb-name">${esc(result.name || 'Messegast')}</span>
-      <span class="lb-score">${result.score} Pkt</span>
+      <span class="lb-score">${getResultCount(result)} richtig</span>
     </div>`;
 }
 
@@ -436,7 +441,8 @@ function getPresetQuizzes() {
         presetQuestion('Wofür steht SRH besonders?', 20, ['Leidenschaft fürs Leben', 'Nur Fernstudium', 'Ausschließlich Technik', 'Nur Heidelberg'], 0),
         presetQuestion('Welches Format passt gut zu einem SRH Messe-Quiz?', 20, ['Einzelmodus direkt am Stand', 'Nur Multiplayer', 'Nur Papierfragebogen', 'Nur Audio ohne Display'], 0),
         presetQuestion('Was ist für Studieninteressierte besonders wichtig?', 20, ['Persönliche Betreuung', 'Zufällige Inhalte', 'Unklare Bewerbungswege', 'Versteckte Informationen'], 0),
-        presetQuestion('Welche Aussage passt zu einer Messe-Situation?', 20, ['Kurze, klare Fragen funktionieren gut', 'Nur sehr lange Texte sind geeignet', 'Timer sollten nie sichtbar sein', 'Branding ist unwichtig'], 0)
+        presetQuestion('Welche Aussage passt zu einer Messe-Situation?', 20, ['Kurze, klare Fragen funktionieren gut', 'Nur sehr lange Texte sind geeignet', 'Timer sollten nie sichtbar sein', 'Branding ist unwichtig'], 0),
+        presetQuestion('Was hilft Besucher:innen beim schnellen Verstehen eines SRH Quiz?', 20, ['Klare Kontraste', 'Kurze Antworttexte', 'Versteckte Navigation', 'Unlesbare Schrift'], [0, 1])
       ]
     },
     {
@@ -446,7 +452,8 @@ function getPresetQuizzes() {
         presetQuestion('Was hilft auf einer Messe beim Einstieg ins Gespräch?', 15, ['Ein kurzes Quiz', 'Nur Flyer ohne Interaktion', 'Komplizierte Formulare', 'Stille'], 0),
         presetQuestion('Welche Darstellung ist für Besucher:innen am angenehmsten?', 15, ['Klare Texte und starke Kontraste', 'Sehr kleine Schrift', 'Viele Fachbegriffe', 'Unruhige Navigation'], 0),
         presetQuestion('Wie sollte ein Messe-Quiz nach einem Durchlauf weitergehen?', 15, ['Direkt neu startbar sein', 'Manuell im Code zurückgesetzt werden', 'Nur nach Browser-Neustart', 'Gar nicht'], 0),
-        presetQuestion('Welche Rolle spielt das SRH Branding?', 15, ['Es sorgt für Wiedererkennung', 'Es ist überflüssig', 'Es darf nur im Footer stehen', 'Es erschwert die Nutzung'], 0)
+        presetQuestion('Welche Rolle spielt das SRH Branding?', 15, ['Es sorgt für Wiedererkennung', 'Es ist überflüssig', 'Es darf nur im Footer stehen', 'Es erschwert die Nutzung'], 0),
+        presetQuestion('Welche Elemente passen gut zu einer Mehrfachauswahl?', 15, ['Klare Hinweise', 'Mehrere richtige Antworten', 'Versteckte Zeitlimits', 'Uneinheitliche Buttons'], [0, 1])
       ]
     }
   ].map(quiz => ({

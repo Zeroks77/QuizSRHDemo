@@ -159,7 +159,3 @@ function fmtSec(s) {
   const m = Math.floor(s / 60);
   return m ? `${m}:${String(s%60).padStart(2,'0')}` : String(s);
 }
-
-function calculateQuestionScore(secondsLeft = 0) {
-  return 100 + Math.max(0, Math.round(secondsLeft * 10));
-}
