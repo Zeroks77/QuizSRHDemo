@@ -2,188 +2,172 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin – SRH Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Admin – SRH Experience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
-  <style>
-    .back-btn { color: var(--primary-light); font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: .3rem; margin-bottom: 1rem; }
-    .back-btn:hover { text-decoration: underline; }
-    .host-layout { display: grid; grid-template-columns: 1.2fr .8fr; gap: 1.5rem; align-items: start; }
-    @media(max-width:820px) { .host-layout { grid-template-columns: 1fr; } }
-    .host-q-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--rl); padding: 1.5rem; }
-    .host-lb-card { border-radius: var(--rl); }
-    .modal-play-url { font-size: .75rem; color: var(--muted); word-break: break-all; text-align: center; margin-top: .5rem; }
-    .brand-mark {
-      width: 68px;
-      height: 68px;
-      border-radius: 22px;
-      background: var(--grad-primary);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-weight: 900;
-      letter-spacing: .04em;
-      box-shadow: 0 8px 32px rgba(0,105,153,.32);
-      margin-bottom: .75rem;
-    }
-  </style>
 </head>
-<body>
-<div class="stars-bg" id="stars"></div>
-
-<nav class="navbar">
-  <a href="index.html" class="logo">SRH Quiz</a>
-  <div class="nav-links">
-    <a href="play.html" class="btn btn-primary btn-sm">▶ Spieleransicht</a>
-  </div>
-</nav>
-
-<div id="view-list" class="view-section container" style="padding-top:2rem;padding-bottom:4rem">
-  <div class="flex justify-between items-center mb-2 wrap gap-2">
-    <div>
-      <h1 style="font-size:1.9rem;font-weight:900">SRH Messe-Quizze</h1>
-      <p class="text-muted text-sm">Quiz auswählen, vorbereiten und für Besucher:innen direkt starten.</p>
-    </div>
-    <div class="flex gap-1 wrap">
-      <button class="btn btn-ghost" onclick="loadPresetQuizzes()">📚 Vorlagen laden</button>
-      <button class="btn btn-primary" onclick="newQuiz()">+ Neues Quiz</button>
-    </div>
-  </div>
-
-  <div class="card mb-2">
-    <div class="flex gap-2 items-center wrap">
-      <div class="brand-mark">SRH</div>
-      <div>
-        <div class="section-title" style="margin-bottom:.35rem">Messemodus</div>
-        <p class="text-muted text-sm">Single-User statt Multiplayer: Admin bereitet das Quiz vor, Besucher:innen spielen direkt auf dem Gerät und danach kann der Lauf neu gestartet werden.</p>
+<body class="admin-mode">
+  <div class="stars-bg" id="stars"></div>
+  <div class="admin-shell">
+    <nav class="navbar">
+      <a href="index.html" class="logo logo-link">
+        <span class="logo-orb"></span>
+        <span>SRH Experience</span>
+      </a>
+      <div class="nav-links">
+        <a href="play.html" class="btn btn-primary btn-sm">▶ Spieleransicht</a>
       </div>
-    </div>
-  </div>
+    </nav>
 
-  <div id="quiz-list" class="quiz-list mt-2"></div>
+    <main class="container admin-stage">
+      <section class="admin-overview">
+        <article class="glass-panel admin-hero">
+          <span class="section-kicker">SRH Holding Studio</span>
+          <h1>SRH Experience vorbereiten</h1>
+          <p>
+            Konfiguriere eine holdingtaugliche Interaktion fuer SRH: Questions, Memory, Gluecksrad oder Mystery Boxen.
+            Die Texte, Module und Beispiele sind auf SRH als starken Partner fuer Bildung und Gesundheit ausgerichtet und fuer Tablets optimiert.
+          </p>
 
-  <div class="mt-3 text-center">
-    <button class="btn btn-ghost btn-sm" onclick="createDemoQuiz()">🎲 SRH Demo-Quiz laden</button>
-  </div>
-</div>
+          <div class="admin-hero-metrics">
+            <div class="metric-card compact">
+              <span class="metric-value" id="admin-status-mode">Memory</span>
+              <span class="metric-label">Aktiver Fokus</span>
+            </div>
+            <div class="metric-card compact">
+              <span class="metric-value" id="admin-status-count">0</span>
+              <span class="metric-label">Module im Entwurf</span>
+            </div>
+            <div class="metric-card compact">
+              <span class="metric-value" id="admin-status-state">Draft</span>
+              <span class="metric-label">Status</span>
+            </div>
+          </div>
+        </article>
 
-<div id="view-editor" class="view-section hidden container" style="padding-top:2rem;padding-bottom:4rem">
-  <div class="flex justify-between items-center mb-2 wrap gap-2">
-    <div>
-      <span class="back-btn" onclick="renderQuizList()">← Zurück zur Übersicht</span>
-      <h2 style="font-size:1.6rem;font-weight:900">Quiz bearbeiten</h2>
-      <p class="text-muted text-sm">Fragen für die SRH Messe vorab definieren und jederzeit anpassen.</p>
-    </div>
-    <div class="flex gap-1 wrap">
-      <button class="btn btn-success" onclick="saveQuiz()">💾 Speichern</button>
-      <button class="btn btn-primary" onclick="saveAndStart()">▶ Speichern &amp; vorbereiten</button>
-    </div>
-  </div>
+        <article class="glass-panel admin-flow">
+          <span class="section-kicker">Experience Flow</span>
+          <div class="flow-list">
+            <div class="flow-item">
+              <span class="mini-step">01</span>
+              <div>
+                <strong>Format waehlen</strong>
+                <p>Waehle Questions, Memory, Gluecksrad oder Mystery Boxen passend zum SRH Auftritt.</p>
+              </div>
+            </div>
+            <div class="flow-item">
+              <span class="mini-step">02</span>
+              <div>
+                <strong>Holding-Themen aufbereiten</strong>
+                <p>Werte, Impulse und Aussagen werden in ein interaktives Modul uebersetzt.</p>
+              </div>
+            </div>
+            <div class="flow-item">
+              <span class="mini-step">03</span>
+              <div>
+                <strong>Direkt live gehen</strong>
+                <p>Nach dem Speichern startet die Session sofort in der Player View.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
 
-  <div class="card mb-2">
-    <div class="form-group">
-      <label class="form-label">Quiz-Titel *</label>
-      <input id="quiz-title" type="text" placeholder="z.B. SRH Messe-Quiz Informatik" />
-    </div>
-    <div class="form-group">
-      <label class="form-label">Beschreibung</label>
-      <textarea id="quiz-description" rows="2" placeholder="Kurze Einleitung für Besucher:innen"></textarea>
-    </div>
-  </div>
-
-  <div class="flex justify-between items-center mb-2">
-    <h3 class="section-title" style="margin-bottom:0">Fragen</h3>
-    <button class="btn btn-ghost btn-sm" onclick="addQuestion()">+ Frage hinzufügen</button>
-  </div>
-
-  <div id="question-list" class="question-list"></div>
-
-  <div class="mt-2 text-center">
-    <button class="btn btn-ghost" onclick="addQuestion()">+ Frage hinzufügen</button>
-  </div>
-</div>
-
-<div id="view-host" class="view-section hidden" style="padding:1rem;max-width:1100px;margin:0 auto;padding-bottom:4rem">
-  <div class="flex justify-between items-center mb-2 wrap gap-2">
-    <div>
-      <h2 id="host-quiz-title" style="font-size:1.5rem;font-weight:900">SRH Quiz</h2>
-      <div class="flex gap-1 items-center mt-1 wrap">
-        <span class="badge badge-amber">Messemodus</span>
-        <span class="text-sm text-muted">Status: <strong id="game-status">Bereit für Start</strong></span>
-      </div>
-      <p id="host-quiz-description" class="text-muted text-sm mt-1">Bereit für den nächsten Messegast.</p>
-    </div>
-    <div class="flex gap-1 wrap">
-      <button class="btn btn-primary" onclick="openPlayerView()">▶ Spieleransicht öffnen</button>
-      <button class="btn btn-secondary" onclick="restartGame()">🔄 Neu vorbereiten</button>
-      <button class="btn btn-ghost btn-sm" onclick="showStartModal()">ℹ️ Info</button>
-    </div>
-  </div>
-
-  <div class="progress-bar mb-2">
-    <div class="progress-bar-fill" id="host-progress" style="width:0%"></div>
-  </div>
-
-  <div class="host-layout">
-    <div>
-      <div class="host-stats mb-2">
-        <div class="stat-card">
-          <div class="stat-val" id="question-count-stat">0</div>
-          <div class="stat-lbl">Fragen</div>
+      <section class="glass-panel example-session-panel">
+        <div class="questions-toolbar">
+          <div>
+            <span class="section-kicker">Beispiele</span>
+            <h2>Showcase-Module fuer SRH Holding</h2>
+            <p>Lade ein vorbereitetes Beispiel und passe es direkt an. So sind Questions, Memory, Gluecksrad und Mystery Boxen sofort sichtbar.</p>
+          </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-val" id="progress-stat">0 / 0</div>
-          <div class="stat-lbl">Fortschritt</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-val" id="score-stat">0</div>
-          <div class="stat-lbl">Richtig</div>
-        </div>
-      </div>
 
-      <div class="host-q-card mb-2">
-        <p id="host-q-display" class="text-muted">Noch kein Lauf aktiv.</p>
-      </div>
-
-      <div class="card">
-        <h4 class="section-title">Ablauf</h4>
-        <div id="host-status-list" class="leaderboard">
-          <span class="text-muted text-sm">Sobald das Quiz vorbereitet ist, erscheint hier der Ablauf.</span>
+        <div class="example-session-grid">
+          <button class="example-session-card" type="button" onclick="loadExampleSession('quiz')">
+            <span class="feature-index">Questions</span>
+            <strong>SRH Holding Questions</strong>
+            <p>Klassische Fragen mit Single- und Multi-Select fuer klare Botschaften und direkte Aktivierung.</p>
+          </button>
+          <button class="example-session-card" type="button" onclick="loadExampleSession('memory')">
+            <span class="feature-index">Memory</span>
+            <strong>Holding Pair Match</strong>
+            <p>Werte, Aussagen und Themen aus Bildung und Gesundheit als modernes Match-Spiel.</p>
+          </button>
+          <button class="example-session-card" type="button" onclick="loadExampleSession('wheel')">
+            <span class="feature-index">Gluecksrad</span>
+            <strong>SRH Themenrad</strong>
+            <p>Ein Spin bringt einen Themenimpuls der Holding direkt in den Fokus.</p>
+          </button>
+          <button class="example-session-card" type="button" onclick="loadExampleSession('mystery')">
+            <span class="feature-index">Mystery</span>
+            <strong>SRH Insight Boxen</strong>
+            <p>Reveal-Format fuer kurze Aha-Momente, Facts und Brand Messages.</p>
+          </button>
         </div>
-      </div>
-    </div>
+      </section>
 
-    <div>
-      <div class="card host-lb-card" id="host-leaderboard">
-        <h4 class="section-title">Letztes Ergebnis</h4>
-        <div id="host-lb-list" class="leaderboard">
-          <span class="text-muted text-sm">Nach einem abgeschlossenen Lauf erscheint hier die Zusammenfassung.</span>
+      <section class="admin-editor-grid">
+        <article class="card admin-composer">
+          <span class="section-kicker">Setup</span>
+          <h2>Experience erstellen</h2>
+          <p class="form-help" id="admin-composer-copy">Waehle das passende Format fuer einen auffaelligen SRH Holding Auftritt und bereite es direkt fuer den Screen vor.</p>
+
+          <div class="form-grid mt-2">
+            <div class="form-group">
+              <label class="form-label" for="quiz-title">Titel</label>
+              <input type="text" id="quiz-title" placeholder="z.B. SRH Holding Brand Experience" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="quiz-mode">Modus</label>
+              <select id="quiz-mode" onchange="updateMode()">
+                <option value="quiz" selected>Questions / Quiz</option>
+                <option value="memory">Memory Spiel</option>
+                <option value="wheel">Gluecksrad</option>
+                <option value="mystery">Mystery Boxen</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="composer-actions">
+            <button class="btn btn-primary" onclick="createQuiz()">Experience anlegen</button>
+          </div>
+        </article>
+
+        <aside class="card admin-side-note">
+          <span class="section-kicker">Qualität</span>
+          <ul class="quality-list">
+            <li>Holding-Themen breit denken: Bildung, Gesundheit, Werte, Verantwortung und Zukunft.</li>
+            <li>Kurze Aussagen sind auf Display und Event-Screen deutlich wirkungsvoller als lange Texte.</li>
+            <li>Eigene Eingabemasken fuer Questions, Memory, Wheel und Mystery halten die Inhalte schneller erfassbar.</li>
+            <li>Maximal sechs Eintraege halten die Experience dynamisch, performant und auf Tablets sofort verstaendlich.</li>
+          </ul>
+        </aside>
+      </section>
+
+      <section class="card questions-panel mt-2" id="questions-section" style="display:none">
+        <div class="questions-toolbar">
+          <div>
+            <span class="section-kicker">Moduleditor</span>
+            <h2 id="questions-panel-title">Module und Inhalte</h2>
+            <p id="questions-panel-copy">Die Inhalte werden passend zum gewaehlten SRH Experience Format in der Player View ausgespielt.</p>
+          </div>
+
+          <div class="questions-toolbar-actions">
+            <button class="btn btn-ghost" id="questions-add-btn" onclick="addQuestion()">+ Modul hinzufuegen</button>
+            <button class="btn btn-success" onclick="saveQuiz()">Speichern und starten</button>
+          </div>
         </div>
-      </div>
-    </div>
+
+        <div id="questions-list" class="questions-list"></div>
+      </section>
+    </main>
   </div>
-</div>
 
-<div id="modal-start" class="modal-backdrop hidden">
-  <div class="modal">
-    <h3 class="modal-title">SRH Quiz ist bereit</h3>
-    <p class="text-muted text-sm mb-2">Dieses Quiz läuft im Einzelmodus ohne Multiplayer. Öffne die Spieleransicht auf dem Messegerät und starte den Lauf direkt dort.</p>
-    <div class="card mb-2 text-center">
-      <div class="section-title" style="margin-bottom:.4rem">Vorbereitetes Quiz</div>
-      <strong id="modal-quiz-title">SRH Quiz</strong>
-      <p class="modal-play-url" id="modal-play-url"></p>
-    </div>
-    <div class="flex flex-col gap-1 mb-2">
-      <button class="btn btn-primary w-full" onclick="openPlayerView()">▶ Spieleransicht öffnen</button>
-      <button class="btn btn-ghost w-full" onclick="copyPlayerLink()">🔗 Link kopieren</button>
-    </div>
-    <button class="btn btn-secondary w-full" onclick="closeStartModal()">✓ Verstanden</button>
-  </div>
-</div>
-
-<div id="toast-container"></div>
-<script src="js/common.js"></script>
-<script src="js/admin.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/admin.js"></script>
 </body>
 </html>

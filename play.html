@@ -2,168 +2,320 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mitspielen – SRH Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Player – SRH Experience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-  <style>
-    body { display: flex; flex-direction: column; }
-    .play-shell { flex: 1; display: flex; flex-direction: column; }
-    .screen { flex: 1; display: flex; flex-direction: column; }
-    .start-screen, .result-screen, .question-screen {
-      width: 100%;
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 2rem 1rem 3rem;
-      position: relative;
-      z-index: 1;
-    }
-    .start-screen { justify-content: center; min-height: calc(100vh - 90px); }
-    .start-logo {
-      width: 88px;
-      height: 88px;
-      border-radius: 28px;
-      background: var(--grad-primary);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      font-weight: 900;
-      margin: 0 auto 1.5rem;
-      box-shadow: 0 10px 35px rgba(0,105,153,.35);
-    }
-    .answer-option {
-      min-height: 72px;
-      font-size: 1rem;
-      align-items: center;
-      border: none;
-      background: var(--glass);
-      cursor: pointer;
-      text-align: left;
-      transition: transform .15s, background .2s, border-color .2s;
-      -webkit-tap-highlight-color: transparent;
-      border: 2px solid var(--glass-border);
-    }
-    .answer-option:active:not(:disabled) { transform: scale(.97); }
-    .answer-option:nth-child(1) .answer-letter { background: #006999; color:#fff; }
-    .answer-option:nth-child(2) .answer-letter { background: #d44407; color:#fff; }
-    .answer-option:nth-child(3) .answer-letter { background: #0f7e7c; color:#fff; }
-    .answer-option:nth-child(4) .answer-letter { background: #9cbed9; color:#072033; }
-    .answer-option:nth-child(5) .answer-letter { background: #1d4ed8; color:#fff; }
-    .answer-option:nth-child(6) .answer-letter { background: #dc2626; color:#fff; }
-    #q-text {
-      font-size: clamp(1.15rem, 4vw, 1.7rem);
-      font-weight: 700;
-      text-align: center;
-      line-height: 1.3;
-      padding: 1rem .5rem;
-    }
-    #q-feedback {
-      background: rgba(156,190,217,.14);
-      border: 1px solid rgba(156,190,217,.28);
-      border-radius: var(--r);
-      padding: .8rem 1rem;
-      text-align: center;
-      font-weight: 600;
-      color: var(--primary-light);
-    }
-    .question-actions { display:flex; justify-content:center; }
-    .question-actions .btn { min-width: 220px; }
-  </style>
 </head>
-<body>
-<div class="stars-bg" id="stars"></div>
+<body class="play-mode">
+  <div class="stars-bg" id="stars"></div>
+  <div class="play-shell">
 
-<nav class="navbar">
-  <a href="index.html" class="logo">SRH Quiz</a>
-  <div class="nav-links">
-    <a href="admin.html" class="btn btn-ghost btn-sm">Admin</a>
-  </div>
-</nav>
-
-<div class="play-shell">
-  <div id="screen-start" class="screen hidden">
-    <div class="start-screen text-center">
-      <div class="start-logo">SRH</div>
-      <div class="hero-badge">Messemodus · Einzelspiel · Direkt startklar</div>
-      <h1 id="start-title" class="hero-title" style="font-size:clamp(2rem,6vw,3.4rem)">SRH Quiz</h1>
-      <p id="start-description" class="hero-sub">Bereit für ein kurzes SRH Messe-Quiz.</p>
-      <div class="card" style="max-width:520px;margin:0 auto 1rem">
-        <div class="section-title">Quiz-Info</div>
-        <div class="flex justify-between items-center wrap gap-1">
-          <span class="text-muted">Umfang</span>
-          <strong id="start-question-count">0 Fragen</strong>
-        </div>
+    <nav class="navbar">
+      <a href="index.html" class="logo logo-link">
+        <span class="logo-orb"></span>
+        <span>SRH Experience</span>
+      </a>
+      <div class="nav-links">
+        <span class="play-nav-chip" id="play-mode-chip">Player View</span>
+        <button id="btn-sound-toggle" class="sound-toggle" type="button" onclick="toggleSoundEffects()" aria-pressed="true">
+          <span class="sound-toggle-dot"></span>
+          <span id="sound-toggle-label">Sound an</span>
+        </button>
+        <a href="admin.html" class="btn btn-ghost btn-sm">Admin</a>
       </div>
-      <div class="flex gap-2 justify-center wrap">
-        <button id="btn-start-quiz" class="btn btn-primary btn-lg" onclick="startQuizRun()">▶ Quiz starten</button>
-        <a href="admin.html" class="btn btn-ghost btn-lg">Zur Admin-Ansicht</a>
-      </div>
-    </div>
-  </div>
+    </nav>
 
-  <div id="screen-question" class="screen hidden">
-    <div class="question-screen">
-      <div class="question-header-bar">
-        <div class="flex flex-col gap-1" style="min-width:0">
-          <div class="flex items-center gap-1">
-            <span class="badge badge-purple" id="q-progress">1 / 5</span>
+    <div id="screen-quiz" class="screen hidden">
+      <div class="container quiz-screen">
+        <section class="glass-panel quiz-stage">
+          <div class="quiz-stage-head">
+            <div class="quiz-stage-copy">
+              <span class="section-kicker">Questions</span>
+              <h1 id="quiz-stage-title">SRH Holding Questions</h1>
+              <p id="quiz-stage-description">Klare Fragen mit Single- und Multi-Select direkt auf dem Screen. Ideal fuer Eventflaechen, Touchpoints und schnelle Aktivierung.</p>
+            </div>
+
+            <div class="quiz-stage-status">
+              <div class="start-metric">
+                <span class="start-metric-value" id="quiz-progress-count">1 / 6</span>
+                <span class="start-metric-label">Fortschritt</span>
+              </div>
+              <div class="start-metric">
+                <span class="start-metric-value" id="quiz-correct-count">0</span>
+                <span class="start-metric-label">Richtig</span>
+              </div>
+              <div class="progress-ring">
+                <svg viewBox="0 0 100 100">
+                  <circle class="progress-bg" cx="50" cy="50" r="45"/>
+                  <circle class="progress-fill" id="quiz-timer-ring" cx="50" cy="50" r="45"/>
+                </svg>
+                <div class="progress-text" id="quiz-timer-display">20</div>
+              </div>
+            </div>
           </div>
-          <div class="progress-bar" style="width:180px;max-width:100%">
-            <div class="progress-bar-fill" id="q-progress-fill" style="width:0%"></div>
+
+          <div class="quiz-body">
+            <div class="quiz-progress-bar"><span id="quiz-progress-bar"></span></div>
+
+            <article class="quiz-question-card" id="quiz-question-card">
+              <div class="quiz-question-topline">
+                <span class="status-pill status-soft" id="quiz-answer-mode">Single Select</span>
+                <span class="status-pill" id="quiz-topic-label">Eine Antwort richtig</span>
+              </div>
+              <h2 id="quiz-question-text">Frage wird vorbereitet ...</h2>
+              <p class="quiz-question-note" id="quiz-question-note">Tippe auf die passende Antwort.</p>
+            </article>
+
+            <div class="quiz-answer-grid" id="quiz-answer-grid"></div>
+            <div id="quiz-feedback" class="quiz-feedback hidden"></div>
+
+            <div class="quiz-action-row">
+              <button id="quiz-submit-btn" class="btn btn-primary btn-lg hidden" type="button" onclick="submitQuizSelection()">Antwort pruefen</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div id="screen-memory" class="screen hidden">
+      <div class="container memory-screen">
+        <svg width="0" height="0" style="position:absolute">
+          <defs>
+            <linearGradient id="gradient-memory" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#ff6a1a;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#4db5d8;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <section class="glass-panel memory-stage">
+          <div class="memory-stage-head">
+            <div class="memory-hero-copy">
+              <span class="section-kicker">Memory</span>
+              <h1>Verbinde Themen und Aussagen</h1>
+              <p>Das Memory-Format verknuepft SRH Holding Themen mit ihren passenden Botschaften und macht Inhalte schnell erfassbar.</p>
+            </div>
+
+            <div class="memory-header">
+              <div class="memory-stats">
+                <div class="memory-stat">
+                  <div class="memory-stat-value" id="memory-matches-count">0</div>
+                  <div class="memory-stat-label">Paare</div>
+                </div>
+                <div class="memory-stat">
+                  <div class="memory-stat-value" id="memory-moves-stat">0</div>
+                  <div class="memory-stat-label">Züge</div>
+                </div>
+              </div>
+
+              <div class="memory-status-cluster">
+                <span class="status-pill">Single Player</span>
+                <span class="status-pill status-soft">SRH Holding</span>
+              </div>
+
+              <div class="progress-ring">
+                <svg viewBox="0 0 100 100">
+                  <circle class="progress-bg" cx="50" cy="50" r="45"/>
+                  <circle class="progress-fill" id="memory-timer-ring" cx="50" cy="50" r="45"/>
+                </svg>
+                <div class="progress-text" id="memory-timer-display">45</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="memory-grid-container">
+            <div id="memory-grid" class="memory-grid"></div>
+          </div>
+        </section>
+
+        <div id="memory-feedback" class="feedback-overlay hidden">
+          <div class="feedback-content">
+            <div class="feedback-icon" id="feedback-icon">✨</div>
+            <div class="feedback-text" id="feedback-text" style="color: var(--green);">Match!</div>
           </div>
         </div>
-
-        <div class="timer-ring" style="width:72px;height:72px;flex-shrink:0">
-          <svg width="72" height="72" viewBox="0 0 72 72">
-            <circle cx="36" cy="36" r="28" fill="none" stroke="var(--glass-border)" stroke-width="5"/>
-            <circle id="timer-arc" cx="36" cy="36" r="28" fill="none" stroke="var(--primary-light)" stroke-width="5" stroke-linecap="round" style="transition:stroke-dashoffset .9s linear, stroke .3s"/>
-          </svg>
-          <span class="timer-text" id="timer-text">30</span>
-        </div>
-
-        <div class="badge badge-amber">SRH Quiz</div>
-      </div>
-
-      <div class="card" style="padding:.75rem 1rem;margin-top:1rem">
-        <p id="q-text">Frage wird geladen…</p>
-      </div>
-
-      <div id="q-selection-hint" class="selection-hint" style="margin-top:.75rem"></div>
-      <div id="q-answers" class="answers-list" style="flex:1;min-height:200px;margin-top:1rem"></div>
-      <div id="q-feedback" class="hidden" style="margin-top:1rem"></div>
-      <div class="question-actions" style="margin-top:1rem">
-        <button id="btn-next-step" class="btn btn-primary hidden" type="button">Antworten prüfen</button>
       </div>
     </div>
-  </div>
 
-  <div id="screen-final" class="screen hidden">
-    <div class="result-screen">
-      <div class="result-icon" id="final-icon">🏆</div>
-      <h2 style="font-size:2rem;font-weight:900">SRH Quiz beendet</h2>
-      <div class="card" style="text-align:center;min-width:240px;margin-top:1rem">
-        <div class="text-muted text-sm">Richtige Antworten</div>
-        <div style="font-size:3rem;font-weight:900;color:var(--amber)" id="final-score">0</div>
-        <div class="text-muted" id="final-rank">Danke fürs Mitmachen!</div>
-      </div>
+    <div id="screen-wheel" class="screen hidden">
+      <div class="container wheel-screen">
+        <section class="glass-panel mode-stage">
+          <div class="mode-stage-head">
+            <div class="mode-stage-copy">
+              <span class="section-kicker">Gluecksrad</span>
+              <h1>SRH Themenrad</h1>
+              <p>Ein Spin bringt einen Holding-Impuls direkt nach vorn. Ideal fuer starke Live-Momente auf Screen, Stand und Buehne.</p>
+            </div>
 
-      <div style="width:100%;max-width:480px;margin-top:1rem">
-        <h3 class="section-title text-center">Zusammenfassung</h3>
-        <div id="final-lb" class="leaderboard"></div>
-      </div>
+            <div class="mode-chip-row">
+              <div class="start-metric">
+                <span class="start-metric-value" id="wheel-segment-count">0</span>
+                <span class="start-metric-label">Segmente</span>
+              </div>
+              <div class="start-metric">
+                <span class="start-metric-value" id="wheel-spin-count">0</span>
+                <span class="start-metric-label">Drehungen</span>
+              </div>
+            </div>
+          </div>
 
-      <div class="flex gap-2 wrap justify-center" style="margin-top:1.5rem">
-        <button class="btn btn-primary" onclick="restartQuiz()">🔄 Neu starten</button>
-        <a href="admin.html" class="btn btn-ghost">Admin öffnen</a>
+          <div class="wheel-layout">
+            <div class="wheel-canvas-shell">
+              <canvas id="wheel-canvas"></canvas>
+              <div id="wheel-focus-overlay" class="wheel-focus-overlay hidden" aria-live="polite">
+                <span class="wheel-focus-kicker" id="wheel-focus-kicker">Gezogener Bereich</span>
+                <strong id="wheel-focus-title">SRH Holding Impuls</strong>
+                <p id="wheel-focus-note">Nach dem Spin wird der gezogene Impuls hier gross und lesbar eingeblendet.</p>
+              </div>
+            </div>
+
+            <div class="wheel-panel">
+              <div class="wheel-result-card">
+                <span class="status-pill status-soft" id="wheel-result-badge">Bereit</span>
+                <h2 id="wheel-result-title">SRH Holding Impuls</h2>
+                <p id="wheel-result-note" class="wheel-result-note">Drehe das Rad und bringe ein Thema der SRH Holding in den Fokus.</p>
+                <div class="hero-cta">
+                  <button id="btn-spin-wheel" class="btn btn-primary btn-lg" onclick="spinWheel()">Rad drehen</button>
+                  <button id="btn-finish-wheel" class="btn btn-ghost btn-lg hidden" onclick="finishExperience()">Abschluss anzeigen</button>
+                </div>
+              </div>
+
+              <div class="wheel-segment-list" id="wheel-segment-list"></div>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
-  </div>
-</div>
 
-<div id="toast-container"></div>
-<script src="js/common.js"></script>
-<script src="js/play.js"></script>
+    <div id="screen-mystery" class="screen hidden">
+      <div class="container mystery-screen">
+        <section class="glass-panel mode-stage">
+          <div class="mode-stage-head">
+            <div class="mode-stage-copy">
+              <span class="section-kicker">Mystery Boxen</span>
+              <h1>SRH Insights freilegen</h1>
+              <p>Box fuer Box erscheinen neue Themen, Aussagen und Perspektiven aus der SRH Holding. Ideal fuer spielerische Reveal-Momente.</p>
+            </div>
+
+            <div class="mode-chip-row">
+              <div class="start-metric">
+                <span class="start-metric-value" id="mystery-open-count">0</span>
+                <span class="start-metric-label">Geoeffnet</span>
+              </div>
+              <div class="start-metric">
+                <span class="start-metric-value" id="mystery-total-count">0</span>
+                <span class="start-metric-label">Boxen</span>
+              </div>
+            </div>
+          </div>
+
+          <div id="mystery-grid" class="mystery-grid"></div>
+        </section>
+      </div>
+    </div>
+
+    <div id="screen-start" class="screen">
+      <div class="container start-screen">
+        <section class="start-layout">
+          <article class="glass-panel start-hero-panel">
+            <span class="section-kicker" id="start-kicker">Player View</span>
+            <h1 id="start-title">SRH Experience</h1>
+            <p id="start-description">Bereit fuer den naechsten Holding-Auftritt auf Display und Touchscreen.</p>
+
+            <div class="start-metrics">
+              <div class="start-metric">
+                <span class="start-metric-value" id="start-question-count">0</span>
+                <span class="start-metric-label" id="start-count-label">Module</span>
+              </div>
+              <div class="start-metric">
+                <span class="start-metric-value" id="start-mode-name">Memory</span>
+                <span class="start-metric-label">Modus</span>
+              </div>
+              <div class="start-metric">
+                <span class="start-metric-value" id="start-state-label">Bereit</span>
+                <span class="start-metric-label">Status</span>
+              </div>
+            </div>
+
+            <div class="start-actions">
+              <button id="btn-start-quiz" class="btn btn-primary btn-lg" onclick="startQuizRun()">Experience starten</button>
+              <a href="admin.html" class="btn btn-ghost btn-lg">Admin öffnen</a>
+            </div>
+          </article>
+
+          <aside class="glass-panel start-preview-panel">
+            <div class="preview-panel-head">
+              <span class="section-kicker">Ablauf</span>
+              <span class="status-pill" id="start-status-chip">Bereit</span>
+            </div>
+
+            <div class="preview-step-list">
+              <div class="preview-step">
+                <span class="mini-step">01</span>
+                <div>
+                  <strong>Format aktivieren</strong>
+                  <p>Der Einstieg passiert direkt auf diesem Geraet ohne weiteres Setup.</p>
+                </div>
+              </div>
+              <div class="preview-step">
+                <span class="mini-step">02</span>
+                <div>
+                  <strong>Markenmoment ausspielen</strong>
+                  <p>Questions, Memory, Gluecksrad und Mystery Boxen bringen Themen, Werte und SRH Botschaften mit sichtbarer Wirkung auf den Screen.</p>
+                </div>
+              </div>
+              <div class="preview-step">
+                <span class="mini-step">03</span>
+                <div>
+                  <strong>Neu bereitstellen</strong>
+                  <p>Nach dem Lauf kehrt die Experience in einen klaren Startzustand fuer die naechste Aktivierung zurueck.</p>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </section>
+      </div>
+    </div>
+
+    <div id="screen-finish" class="screen hidden">
+      <div class="container finish-screen">
+        <section class="glass-panel finish-panel">
+          <span class="section-kicker">Session abgeschlossen</span>
+          <h2 id="finish-title">Starker Lauf.</h2>
+          <p id="finish-summary">Die Runde ist beendet und kann direkt für den nächsten Gast neu gestartet werden.</p>
+
+          <div class="finish-metrics">
+            <div class="start-metric">
+              <span class="start-metric-value" id="finish-pairs">0</span>
+              <span class="start-metric-label" id="finish-primary-label">Gefundene Paare</span>
+            </div>
+            <div class="start-metric">
+              <span class="start-metric-value" id="finish-moves">0</span>
+              <span class="start-metric-label" id="finish-secondary-label">Zuege</span>
+            </div>
+            <div class="start-metric">
+              <span class="start-metric-value" id="finish-state">Bereit</span>
+              <span class="start-metric-label" id="finish-tertiary-label">Status</span>
+            </div>
+          </div>
+
+          <div class="start-actions">
+            <button class="btn btn-primary btn-lg" onclick="restartExperience()">Neu starten</button>
+            <a href="admin.html" class="btn btn-ghost btn-lg">Admin öffnen</a>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div id="toast-container"></div>
+    
+    <script src="js/common.js"></script>
+    <script src="js/wheel.js"></script>
+    <script src="js/play.js"></script>
+  </div>
 </body>
 </html>
