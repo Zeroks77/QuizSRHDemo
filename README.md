@@ -2,7 +2,7 @@
 
 Eine statische Web-App fuer SRH Auftritte auf Event, Messe und Touchscreen: Der Admin bereitet eine Experience vor, Besucher:innen spielen direkt im Einzelmodus auf dem Geraet und danach kann der Lauf sofort neu gestartet werden. Die Player View ist fuer Tablets optimiert und auf schnelle Touch-Interaktion ausgelegt.
 
-🔗 **Live-Demo:** [GitHub Pages](https://zeroks77.github.io/QuizSAHDemo/)
+🔗 **Live-Demo:** [GitHub Pages](https://zeroks77.github.io/QuizSRHDemo/)
 
 ## Features
 
