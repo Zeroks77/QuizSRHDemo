@@ -7,20 +7,146 @@ function uuidv4() {
     (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
 }
 
+const WINDOW_STORAGE_PREFIX = '__SRH_EXPERIENCE_STORE__:';
+
+function readWindowNameStore() {
+  try {
+    if (!String(window.name || '').startsWith(WINDOW_STORAGE_PREFIX)) return {};
+    const raw = window.name.slice(WINDOW_STORAGE_PREFIX.length);
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeWindowNameStore(store) {
+  try {
+    window.name = WINDOW_STORAGE_PREFIX + JSON.stringify(store);
+  } catch {
+    // Ignore fallback serialization errors and continue without tab fallback.
+  }
+}
+
+function canUseLocalStorage() {
+  try {
+    const testKey = '__srh_storage_probe__';
+    localStorage.setItem(testKey, '1');
+    localStorage.removeItem(testKey);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+const StorageRuntime = (() => {
+  const windowStore = readWindowNameStore();
+  const hasLocalStorage = canUseLocalStorage();
+
+  function getLocalValue(key) {
+    if (!hasLocalStorage) return null;
+    try {
+      return localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  }
+
+  function getFallbackValue(key) {
+    return Object.prototype.hasOwnProperty.call(windowStore, key) ? windowStore[key] : null;
+  }
+
+  return {
+    getCandidates(key) {
+      const values = [];
+      const localValue = getLocalValue(key);
+      const fallbackValue = getFallbackValue(key);
+
+      if (localValue !== null) values.push(localValue);
+      if (fallbackValue !== null && fallbackValue !== localValue) values.push(fallbackValue);
+
+      return values;
+    },
+    setItem(key, value) {
+      windowStore[key] = value;
+      writeWindowNameStore(windowStore);
+
+      if (!hasLocalStorage) return;
+
+      try {
+        localStorage.setItem(key, value);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    removeItem(key) {
+      delete windowStore[key];
+      writeWindowNameStore(windowStore);
+
+      if (!hasLocalStorage) return;
+
+      try {
+        localStorage.removeItem(key);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    getStatus() {
+      return {
+        hasLocalStorage,
+        isFileProtocol: window.location.protocol === 'file:'
+      };
+    }
+  };
+})();
+
 const Store = {
   get(key, def = null) {
-    try { return JSON.parse(localStorage.getItem(key)) ?? def; } catch { return def; }
+    const values = StorageRuntime.getCandidates(key);
+
+    for (const raw of values) {
+      try {
+        return JSON.parse(raw) ?? def;
+      } catch {
+        // Continue with the next backend if one payload is invalid.
+      }
+    }
+
+    return def;
   },
   set(key, val) {
-    try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) { console.error(e); }
+    try {
+      StorageRuntime.setItem(key, JSON.stringify(val));
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
   },
-  remove(key) { localStorage.removeItem(key); }
+  remove(key) {
+    try {
+      StorageRuntime.removeItem(key);
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  },
+  getStatus() {
+    return StorageRuntime.getStatus();
+  }
 };
 
 const QuizStore = {
-  all() { return Store.get('quizzes', []); },
+  all() {
+    const quizzes = Store.get('quizzes', []);
+    return Array.isArray(quizzes) ? quizzes : [];
+  },
   save(quizzes) { Store.set('quizzes', quizzes); },
   get(id) { return this.all().find(q => q.id === id) || null; },
+  delete(id) {
+    this.save(this.all().filter(q => q.id !== id));
+  },
   upsert(quiz) {
     const list = this.all();
     const idx = list.findIndex(q => q.id === quiz.id);
@@ -40,6 +166,18 @@ const ActiveGameStore = {
   get() { return Store.get('active_game_code', null); },
   set(code) { Store.set('active_game_code', code); },
   clear() { Store.remove('active_game_code'); }
+};
+
+const AdminDraftStore = {
+  get() { return Store.get('admin_quiz_draft', null); },
+  set(quiz) { Store.set('admin_quiz_draft', quiz); },
+  clear() { Store.remove('admin_quiz_draft'); }
+};
+
+const AdminStateStore = {
+  getCurrentQuizId() { return Store.get('admin_current_quiz_id', null); },
+  setCurrentQuizId(id) { Store.set('admin_current_quiz_id', id); },
+  clear() { Store.remove('admin_current_quiz_id'); }
 };
 
 function getQuizMode(source) {

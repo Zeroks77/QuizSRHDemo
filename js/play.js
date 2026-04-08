@@ -38,12 +38,12 @@ const MODE_META = {
     countLabel: 'Paare',
     startButton: 'Memory starten',
     finishPrimaryLabel: 'Gefundene Paare',
-    finishSecondaryLabel: 'Zuege',
+    finishSecondaryLabel: 'Züge',
     finishTertiaryLabel: 'Status'
   },
   wheel: {
-    modeLabel: 'Gluecksrad',
-    navLabel: 'Gluecksrad',
+    modeLabel: 'Glücksrad',
+    navLabel: 'Glücksrad',
     kicker: 'Wheel Experience',
     description: 'Ein Spin bringt Themen, Werte und Impulse der SRH Holding sichtbar nach vorn.',
     countLabel: 'Segmente',
@@ -56,10 +56,10 @@ const MODE_META = {
     modeLabel: 'Mystery Boxen',
     navLabel: 'Mystery',
     kicker: 'Reveal Experience',
-    description: 'Oeffne Mystery Boxen und bringe SRH Insights Schritt fuer Schritt auf den Screen.',
+    description: 'Öffne Mystery Boxen und bringe SRH Insights Schritt für Schritt auf den Screen.',
     countLabel: 'Boxen',
     startButton: 'Reveal starten',
-    finishPrimaryLabel: 'Geoeffnet',
+    finishPrimaryLabel: 'Geöffnet',
     finishSecondaryLabel: 'Boxen gesamt',
     finishTertiaryLabel: 'Status'
   }
@@ -266,7 +266,7 @@ function getQuizTimeLimit(question) {
 function startQuestionRun() {
   const questions = buildQuizQuestions(quizData);
   if (!questions.length) {
-    toast('Dieser Questions-Run benoetigt mindestens zwei Antwortoptionen pro Frage.', 'error');
+    toast('Dieser Questions-Run benötigt mindestens zwei Antwortoptionen pro Frage.', 'error');
     return;
   }
 
@@ -307,14 +307,14 @@ function renderQuestionStage() {
   }
 
   setText('quiz-stage-title', quizData?.title || 'SRH Holding Questions');
-  setText('quiz-stage-description', 'Klare Fragen mit Single- und Multi-Select direkt auf dem Screen. Ideal fuer Eventflaechen, Touchpoints und schnelle Aktivierung.');
+  setText('quiz-stage-description', 'Klare Fragen mit Single- und Multi-Select direkt auf dem Screen. Ideal für Eventflächen, Touchpoints und schnelle Aktivierung.');
   setText('quiz-progress-count', `${state.currentIndex + 1} / ${state.questions.length}`);
   setText('quiz-correct-count', String(correctAnswers));
   setText('quiz-answer-mode', isMulti ? 'Multi Select' : 'Single Select');
   setText('quiz-topic-label', isMulti ? 'Mehrere Antworten richtig' : 'Eine Antwort richtig');
   setText('quiz-question-text', question.text);
   setText('quiz-question-note', isMulti
-    ? 'Markiere alle passenden Antworten und tippe dann auf Antwort pruefen.'
+    ? 'Markiere alle passenden Antworten und tippe dann auf Antwort prüfen.'
     : 'Tippe direkt auf die passende Antwort.');
 
   const bar = document.getElementById('quiz-progress-bar');
@@ -398,7 +398,7 @@ function updateQuizSubmitButton(question) {
 
   button.classList.toggle('hidden', !showButton);
   button.disabled = !showButton || state.selectedIndexes.length === 0;
-  button.textContent = 'Antwort pruefen';
+  button.textContent = 'Antwort prüfen';
 }
 
 function startQuizTimer(seconds) {
@@ -781,7 +781,7 @@ function buildWheelSegments(quiz) {
 function startWheelRun() {
   const segments = buildWheelSegments(quizData);
   if (!segments.length) {
-    toast('Dieses Gluecksrad benoetigt mindestens ein Segment.', 'error');
+    toast('Dieses Glücksrad benötigt mindestens ein Segment.', 'error');
     return;
   }
 
@@ -799,7 +799,7 @@ function startWheelRun() {
   };
 
   saveGameState();
-  setText('play-mode-chip', 'Gluecksrad');
+  setText('play-mode-chip', 'Glücksrad');
   showScreen('screen-wheel');
 
   document.querySelector('#screen-wheel .wheel-canvas-shell')?.classList.remove('is-spinning', 'is-highlighted');
@@ -902,7 +902,7 @@ function renderWheelFocus(winner, visible) {
   overlay.style.setProperty('--wheel-focus-color', winner.color || '#ff6a1a');
   setText('wheel-focus-kicker', winner.category || 'Gezogener Bereich');
   setText('wheel-focus-title', winner.label || 'SRH Holding Impuls');
-  setText('wheel-focus-note', winner.note || 'Der gezogene Impuls wird hier gross und lesbar eingeblendet.');
+  setText('wheel-focus-note', winner.note || 'Der gezogene Impuls wird hier groß und lesbar eingeblendet.');
 
   overlay.classList.remove('hidden');
   if (!overlay.classList.contains('is-visible')) {
@@ -934,7 +934,7 @@ function spinWheel() {
 
   if (!currentWheel) syncWheelInstance();
   if (!currentWheel) {
-    toast('Das Gluecksrad konnte nicht initialisiert werden.', 'error');
+    toast('Das Glücksrad konnte nicht initialisiert werden.', 'error');
     return;
   }
 
@@ -976,7 +976,7 @@ function buildMysteryBoxes(quiz) {
   return quiz.questions.slice(0, 6).map((question, index) => ({
     id: `box-${index + 1}`,
     title: getFieldText(question, ['title', 'text', 'prompt']) || `Insight ${index + 1}`,
-    teaser: getFieldText(question, ['teaser']) || 'Tippen zum Oeffnen',
+    teaser: getFieldText(question, ['teaser']) || 'Tippen zum Öffnen',
     reveal: getFieldText(question, ['reveal']) || getCorrectText(question),
     tone: accents[index % accents.length]
   }));
@@ -985,7 +985,7 @@ function buildMysteryBoxes(quiz) {
 function startMysteryRun() {
   const boxes = buildMysteryBoxes(quizData);
   if (!boxes.length) {
-    toast('Die Mystery Boxen benoetigen mindestens einen Inhalt.', 'error');
+    toast('Die Mystery Boxen benötigen mindestens einen Inhalt.', 'error');
     return;
   }
 
@@ -1022,7 +1022,7 @@ function renderMysteryScreen() {
         <span class="feature-index">Box ${index + 1}</span>
         <strong>${esc(box.title)}</strong>
         <p>${esc(isOpen ? box.reveal : box.teaser)}</p>
-        <span class="mystery-card-state">${isOpen ? 'Geoeffnet' : 'Reveal starten'}</span>
+        <span class="mystery-card-state">${isOpen ? 'Geöffnet' : 'Reveal starten'}</span>
       </button>
     `;
   }).join('');
@@ -1076,7 +1076,7 @@ function startQuizRun() {
     return;
   }
 
-  toast('Dieser Modus ist aktuell nicht verfuegbar.', 'error');
+  toast('Dieser Modus ist aktuell nicht verfügbar.', 'error');
 }
 
 function finishExperience() {
@@ -1086,7 +1086,7 @@ function finishExperience() {
   const mode = currentGame?.mode || currentRunMode;
   const meta = getModeMeta(mode);
   let title = 'Session beendet.';
-  let summary = 'Die Experience kann direkt fuer den naechsten Kontakt neu gestartet werden.';
+  let summary = 'Die Experience kann direkt für den nächsten Kontakt neu gestartet werden.';
   let primaryValue = '0';
   let secondaryValue = '0';
   let tertiaryValue = 'Ready';
@@ -1100,8 +1100,8 @@ function finishExperience() {
     const multiCount = state.questions?.filter((question) => isMultiAnswerQuestion(question)).length || 0;
     title = accuracy >= 80 ? 'Starker Questions-Run.' : accuracy >= 50 ? 'Questions beendet.' : 'Questions abgeschlossen.';
     summary = accuracy >= 80
-      ? 'Die wichtigsten SRH Holding Botschaften sitzen. Der Questions-Run ist sofort bereit fuer den naechsten Kontakt.'
-      : 'Die Questions-Session ist beendet und kann direkt fuer den naechsten Durchlauf neu gestartet werden.';
+      ? 'Die wichtigsten SRH Holding Botschaften sitzen. Der Questions-Run ist sofort bereit für den nächsten Kontakt.'
+      : 'Die Questions-Session ist beendet und kann direkt für den nächsten Durchlauf neu gestartet werden.';
     primaryValue = `${correctAnswers}/${totalQuestions}`;
     secondaryValue = `${accuracy} %`;
     tertiaryValue = multiCount ? `${multiCount} Multi` : 'Single';
@@ -1121,7 +1121,7 @@ function finishExperience() {
     const isComplete = totalPairs > 0 && correctAnswers === totalPairs;
     title = isComplete ? 'Starker Match-Run.' : 'Memory beendet.';
     summary = isComplete
-      ? 'Alle Paare wurden gefunden. Die SRH Experience ist sofort bereit fuer den naechsten Gast.'
+      ? 'Alle Paare wurden gefunden. Die SRH Experience ist sofort bereit für den nächsten Gast.'
       : 'Der Countdown ist abgelaufen. Das Memory kann direkt neu gestartet werden.';
     primaryValue = `${correctAnswers}/${totalPairs}`;
     secondaryValue = String(moves);
@@ -1133,10 +1133,10 @@ function finishExperience() {
   if (mode === 'wheel') {
     const state = currentGame?.modeState || {};
     const lastWinner = state.segments?.find((segment) => segment.id === state.lastWinnerId);
-    title = state.spins > 0 ? 'Impulse ausgespielt.' : 'Gluecksrad beendet.';
+    title = state.spins > 0 ? 'Impulse ausgespielt.' : 'Glücksrad beendet.';
     summary = lastWinner
       ? `Der letzte gezogene Impuls war ${lastWinner.label}. Die Experience kann direkt neu inszeniert werden.`
-      : 'Das Themenrad ist bereit fuer die naechste Aktivierung.';
+      : 'Das Themenrad ist bereit für die nächste Aktivierung.';
     primaryValue = String(state.spins || 0);
     secondaryValue = `${state.drawnIds?.length || 0}/${state.segments?.length || 0}`;
     tertiaryValue = lastWinner?.label || 'Bereit';
@@ -1155,9 +1155,9 @@ function finishExperience() {
     const opened = state.openedIds?.length || 0;
     const total = state.boxes?.length || 0;
     const isComplete = total > 0 && opened === total;
-    title = isComplete ? 'Alle Boxen geoeffnet.' : 'Mystery beendet.';
+    title = isComplete ? 'Alle Boxen geöffnet.' : 'Mystery beendet.';
     summary = isComplete
-      ? 'Alle SRH Insights wurden freigelegt. Die Experience kann direkt fuer den naechsten Reveal neu starten.'
+      ? 'Alle SRH Insights wurden freigelegt. Die Experience kann direkt für den nächsten Reveal neu starten.'
       : 'Die Reveal-Session ist beendet und kann direkt neu gestartet werden.';
     primaryValue = String(opened);
     secondaryValue = String(total);

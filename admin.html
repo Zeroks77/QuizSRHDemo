@@ -28,8 +28,8 @@
           <span class="section-kicker">SRH Holding Studio</span>
           <h1>SRH Experience vorbereiten</h1>
           <p>
-            Konfiguriere eine holdingtaugliche Interaktion fuer SRH: Questions, Memory, Gluecksrad oder Mystery Boxen.
-            Die Texte, Module und Beispiele sind auf SRH als starken Partner fuer Bildung und Gesundheit ausgerichtet und fuer Tablets optimiert.
+            Konfiguriere eine holdingtaugliche Interaktion für SRH: Questions, Memory, Glücksrad oder Mystery Boxen.
+            Die Texte, Module und Beispiele sind auf SRH als starken Partner für Bildung und Gesundheit ausgerichtet und für Tablets optimiert.
           </p>
 
           <div class="admin-hero-metrics">
@@ -54,15 +54,15 @@
             <div class="flow-item">
               <span class="mini-step">01</span>
               <div>
-                <strong>Format waehlen</strong>
-                <p>Waehle Questions, Memory, Gluecksrad oder Mystery Boxen passend zum SRH Auftritt.</p>
+                <strong>Format wählen</strong>
+                <p>Wähle Questions, Memory, Glücksrad oder Mystery Boxen passend zum SRH Auftritt.</p>
               </div>
             </div>
             <div class="flow-item">
               <span class="mini-step">02</span>
               <div>
                 <strong>Holding-Themen aufbereiten</strong>
-                <p>Werte, Impulse und Aussagen werden in ein interaktives Modul uebersetzt.</p>
+                <p>Werte, Impulse und Aussagen werden in ein interaktives Modul übersetzt.</p>
               </div>
             </div>
             <div class="flow-item">
@@ -80,8 +80,8 @@
         <div class="questions-toolbar">
           <div>
             <span class="section-kicker">Beispiele</span>
-            <h2>Showcase-Module fuer SRH Holding</h2>
-            <p>Lade ein vorbereitetes Beispiel und passe es direkt an. So sind Questions, Memory, Gluecksrad und Mystery Boxen sofort sichtbar.</p>
+            <h2>Showcase-Module für SRH Holding</h2>
+            <p>Lade ein vorbereitetes Beispiel und passe es direkt an. So sind Questions, Memory, Glücksrad und Mystery Boxen sofort sichtbar.</p>
           </div>
         </div>
 
@@ -89,7 +89,7 @@
           <button class="example-session-card" type="button" onclick="loadExampleSession('quiz')">
             <span class="feature-index">Questions</span>
             <strong>SRH Holding Questions</strong>
-            <p>Klassische Fragen mit Single- und Multi-Select fuer klare Botschaften und direkte Aktivierung.</p>
+            <p>Klassische Fragen mit Single- und Multi-Select für klare Botschaften und direkte Aktivierung.</p>
           </button>
           <button class="example-session-card" type="button" onclick="loadExampleSession('memory')">
             <span class="feature-index">Memory</span>
@@ -97,23 +97,45 @@
             <p>Werte, Aussagen und Themen aus Bildung und Gesundheit als modernes Match-Spiel.</p>
           </button>
           <button class="example-session-card" type="button" onclick="loadExampleSession('wheel')">
-            <span class="feature-index">Gluecksrad</span>
+            <span class="feature-index">Glücksrad</span>
             <strong>SRH Themenrad</strong>
             <p>Ein Spin bringt einen Themenimpuls der Holding direkt in den Fokus.</p>
           </button>
           <button class="example-session-card" type="button" onclick="loadExampleSession('mystery')">
             <span class="feature-index">Mystery</span>
             <strong>SRH Insight Boxen</strong>
-            <p>Reveal-Format fuer kurze Aha-Momente, Facts und Brand Messages.</p>
+            <p>Reveal-Format für kurze Aha-Momente, Facts und Brand Messages.</p>
           </button>
         </div>
+      </section>
+
+      <section class="glass-panel saved-session-panel">
+        <div class="questions-toolbar">
+          <div>
+            <span class="section-kicker">Bibliothek</span>
+            <h2>Gespeicherte Experiences</h2>
+            <p id="saved-quizzes-copy">Gespeicherte Experiences können hier erneut geladen, angepasst und direkt wieder gestartet werden.</p>
+          </div>
+
+          <div class="questions-toolbar-actions">
+            <button class="btn btn-ghost" type="button" onclick="startFreshDraft()">Neuen Entwurf</button>
+            <button class="btn btn-secondary" type="button" onclick="exportCurrentQuiz()">Aktive exportieren</button>
+            <button class="btn btn-ghost" type="button" onclick="exportQuizLibrary()">Bibliothek exportieren</button>
+            <button class="btn btn-ghost" type="button" onclick="triggerQuizImport()">JSON importieren</button>
+          </div>
+        </div>
+
+        <div id="storage-warning" class="storage-warning hidden"></div>
+        <p class="library-sync-note">Auf Tablets kann der Export direkt über das Teilen-Menü in OneDrive, Google Drive oder die Dateien-App gelegt werden.</p>
+        <div id="saved-quizzes-list" class="saved-quizzes-list"></div>
+        <input id="quiz-import-input" class="hidden" type="file" accept="application/json,.json" onchange="handleQuizImport(event)" />
       </section>
 
       <section class="admin-editor-grid">
         <article class="card admin-composer">
           <span class="section-kicker">Setup</span>
           <h2>Experience erstellen</h2>
-          <p class="form-help" id="admin-composer-copy">Waehle das passende Format fuer einen auffaelligen SRH Holding Auftritt und bereite es direkt fuer den Screen vor.</p>
+          <p class="form-help" id="admin-composer-copy">Wähle das passende Format für einen auffälligen SRH Holding Auftritt und bereite es direkt für den Screen vor.</p>
 
           <div class="form-grid mt-2">
             <div class="form-group">
@@ -126,7 +148,7 @@
               <select id="quiz-mode" onchange="updateMode()">
                 <option value="quiz" selected>Questions / Quiz</option>
                 <option value="memory">Memory Spiel</option>
-                <option value="wheel">Gluecksrad</option>
+                <option value="wheel">Glücksrad</option>
                 <option value="mystery">Mystery Boxen</option>
               </select>
             </div>
@@ -142,8 +164,8 @@
           <ul class="quality-list">
             <li>Holding-Themen breit denken: Bildung, Gesundheit, Werte, Verantwortung und Zukunft.</li>
             <li>Kurze Aussagen sind auf Display und Event-Screen deutlich wirkungsvoller als lange Texte.</li>
-            <li>Eigene Eingabemasken fuer Questions, Memory, Wheel und Mystery halten die Inhalte schneller erfassbar.</li>
-            <li>Maximal sechs Eintraege halten die Experience dynamisch, performant und auf Tablets sofort verstaendlich.</li>
+            <li>Eigene Eingabemasken für Questions, Memory, Wheel und Mystery halten die Inhalte schneller erfassbar.</li>
+            <li>Maximal sechs Einträge halten die Experience dynamisch, performant und auf Tablets sofort verständlich.</li>
           </ul>
         </aside>
       </section>
@@ -153,11 +175,11 @@
           <div>
             <span class="section-kicker">Moduleditor</span>
             <h2 id="questions-panel-title">Module und Inhalte</h2>
-            <p id="questions-panel-copy">Die Inhalte werden passend zum gewaehlten SRH Experience Format in der Player View ausgespielt.</p>
+            <p id="questions-panel-copy">Die Inhalte werden passend zum gewählten SRH Experience Format in der Player View ausgespielt.</p>
           </div>
 
           <div class="questions-toolbar-actions">
-            <button class="btn btn-ghost" id="questions-add-btn" onclick="addQuestion()">+ Modul hinzufuegen</button>
+            <button class="btn btn-ghost" id="questions-add-btn" onclick="addQuestion()">+ Modul hinzufügen</button>
             <button class="btn btn-success" onclick="saveQuiz()">Speichern und starten</button>
           </div>
         </div>
