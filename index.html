@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>SRH Experience – Holding Event Mode</title>
+  <title>SRH Experience – Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
@@ -24,188 +24,148 @@
     </nav>
 
     <main class="container landing-main">
-      <section class="landing-grid">
+      <section class="landing-grid" style="min-height:auto; padding: 2.5rem 0 1.5rem;">
         <div class="hero-copy">
           <div class="hero-kicker">Aus Leidenschaft fürs Leben.</div>
-          <div class="hero-badges">
-            <span class="hero-badge">SRH Holding</span>
-            <span class="hero-badge hero-badge-muted">Bildung und Gesundheit in einem Auftritt</span>
-          </div>
-
           <h1 class="hero-title">
             Interaktive SRH<br><span class="accent">Brand Experience.</span>
           </h1>
-
           <p class="hero-sub">
-            Ein moderner Holding-Auftritt für SRH: sichtbar, hochwertig und sofort verständlich.
-            Questions, Memory, Glücksrad und Mystery Boxen bringen Werte, Themen und Impulse aus Bildung und Gesundheit auf die Bühne.
+            Erstelle, verwalte und starte Quiz-Sessions direkt im Browser.
           </p>
-
           <div class="hero-cta">
-            <a href="admin.html" class="btn btn-primary btn-lg">Experience vorbereiten</a>
-            <a href="play.html" class="btn btn-ghost btn-lg">Player View öffnen</a>
+            <a href="admin.html" class="btn btn-primary btn-lg">Neue Experience</a>
+            <a href="play.html" class="btn btn-ghost btn-lg">Player View</a>
           </div>
+        </div>
+      </section>
 
-          <div class="hero-metrics">
-            <article class="metric-card">
-              <span class="metric-value">4</span>
-              <span class="metric-label">Showcase-Formate</span>
-            </article>
-            <article class="metric-card">
-              <span class="metric-value">1</span>
-              <span class="metric-label">Holding Story über alle Module</span>
-            </article>
-            <article class="metric-card">
-              <span class="metric-value">2026</span>
-              <span class="metric-label">Brand Staging statt Standard-Demo</span>
-            </article>
+      <section class="glass-panel saved-session-panel" id="dashboard-panel">
+        <div class="questions-toolbar">
+          <div>
+            <span class="section-kicker">Dashboard</span>
+            <h2>Deine Experiences</h2>
+            <p>Gespeicherte Sessions direkt starten oder im Admin bearbeiten.</p>
+          </div>
+        </div>
+        <div id="dashboard-quiz-list" class="saved-quizzes-list"></div>
+      </section>
+
+      <section class="glass-panel example-session-panel" style="margin-top:1rem;">
+        <div class="questions-toolbar">
+          <div>
+            <span class="section-kicker">Neu erstellen</span>
+            <h2>Format wählen</h2>
+            <p>Erstelle eine neue Experience im Admin-Bereich.</p>
           </div>
         </div>
 
-        <div class="hero-stage">
-          <article class="glass-panel showcase-panel">
-            <div class="panel-kicker">Live Preview</div>
-            <div class="showcase-surface">
-              <div class="showcase-topline">
-                <span class="status-pill status-live">bereit</span>
-                <span class="status-pill">SRH Holding Showcase</span>
-              </div>
-
-              <div class="showcase-grid">
-                <div class="showcase-block showcase-block-primary">
-                  <span class="showcase-label">Memory</span>
-                  <strong>Themen und Aussagen verbinden</strong>
-                  <p>Werte, Themen und SRH Fakten in einer hochwertigen Pair-Match-Experience.</p>
-                </div>
-                <div class="showcase-block showcase-block-accent">
-                  <span class="showcase-label">Glücksrad</span>
-                  <strong>Impulse in Szene setzen</strong>
-                  <p>Ein Spin bringt Themen aus Bildung, Gesundheit und Verantwortung nach vorn.</p>
-                </div>
-                <div class="showcase-stat">
-                  <span class="showcase-stat-value">Mystery</span>
-                  <span class="showcase-stat-label">Boxen für Insights und Aha-Momente</span>
-                </div>
-                <div class="showcase-stat">
-                  <span class="showcase-stat-value">Brand</span>
-                  <span class="showcase-stat-label">auffällig, mutig und holdingtauglich</span>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <article class="glass-panel mini-preview">
-            <div class="mini-preview-head">
-              <span class="panel-kicker">Session Flow</span>
-              <span class="mini-preview-tag">SRH</span>
-            </div>
-
-            <div class="mini-preview-stack">
-              <div class="mini-preview-row">
-                <span class="mini-step">01</span>
-                <div>
-                  <strong>Holding-Story definieren</strong>
-                  <p>Werte, Themen und SRH Botschaften werden in ein passendes Format übersetzt.</p>
-                </div>
-              </div>
-              <div class="mini-preview-row">
-                <span class="mini-step">02</span>
-                <div>
-                  <strong>Interaktiven Moment ausloesen</strong>
-                  <p>Memory, Glücksrad oder Mystery Boxen schaffen direkt sichtbare Aktivierung.</p>
-                </div>
-              </div>
-              <div class="mini-preview-row">
-                <span class="mini-step">03</span>
-                <div>
-                  <strong>Nächsten Kontakt starten</strong>
-                  <p>Die Experience springt sauber zurück und ist sofort bereit für die nächste Aktivierung.</p>
-                </div>
-              </div>
-            </div>
-          </article>
+        <div class="example-session-grid">
+          <a class="example-session-card" href="admin.html">
+            <span class="feature-index">Questions</span>
+            <strong>Quiz mit Antworten</strong>
+            <p>Single- und Multi-Select Fragen für direkte Aktivierung.</p>
+          </a>
+          <a class="example-session-card" href="admin.html">
+            <span class="feature-index">Memory</span>
+            <strong>Pair Match</strong>
+            <p>Werte und Themen als interaktives Memory-Spiel.</p>
+          </a>
+          <a class="example-session-card" href="admin.html">
+            <span class="feature-index">Glücksrad</span>
+            <strong>Themenrad</strong>
+            <p>Impulse per Spin sichtbar machen – ideal für Live-Momente.</p>
+          </a>
+          <a class="example-session-card" href="admin.html">
+            <span class="feature-index">Mystery</span>
+            <strong>Insight Boxen</strong>
+            <p>Reveal-Format für Aha-Momente und Brand Messages.</p>
+          </a>
         </div>
-      </section>
-
-      <section class="landing-band">
-        <article class="glass-panel band-card">
-          <span class="section-kicker">SRH Holding</span>
-          <h2>Ein starker Partner für Bildung und Gesundheit. Jetzt auch als Event-Experience.</h2>
-        </article>
-        <article class="glass-panel band-stat">
-          <span class="band-stat-value">Live</span>
-          <span class="band-stat-label">optimiert für Tablet, Touchscreen und Event Display</span>
-        </article>
-        <article class="glass-panel band-stat">
-          <span class="band-stat-value">Holding</span>
-          <span class="band-stat-label">breit über Bildung und Gesundheit einsetzbar und passend für die Dachmarke</span>
-        </article>
-      </section>
-
-      <section class="experience-gallery">
-        <article class="glass-panel experience-mode-card">
-          <span class="feature-index">Format 01</span>
-          <h3>Questions</h3>
-          <p>Perfekt für klare Holding-Fragen mit Single- und Multi-Select direkt auf Display, Touchscreen oder Eventfläche.</p>
-          <div class="mode-preview-list">
-            <span class="status-pill">Fragen</span>
-            <span class="status-pill">Multi Select</span>
-            <span class="status-pill">Screen</span>
-          </div>
-        </article>
-        <article class="glass-panel experience-mode-card">
-          <span class="feature-index">Format 02</span>
-          <h3>Memory Pair Match</h3>
-          <p>Ideal für klare SRH Aussagen, Werte und Themenpaare mit sofortiger visueller Rückmeldung.</p>
-          <div class="mode-preview-list">
-            <span class="status-pill">Werte</span>
-            <span class="status-pill">Bildung</span>
-            <span class="status-pill">Gesundheit</span>
-          </div>
-        </article>
-        <article class="glass-panel experience-mode-card">
-          <span class="feature-index">Format 03</span>
-          <h3>Glücksrad</h3>
-          <p>Perfekt für Live-Momente am Stand, auf Bühnen oder in Aktivierungszonen mit starkem Showcharakter.</p>
-          <div class="mode-preview-list">
-            <span class="status-pill">Impulse</span>
-            <span class="status-pill">Events</span>
-            <span class="status-pill">Aktivierung</span>
-          </div>
-        </article>
-        <article class="glass-panel experience-mode-card">
-          <span class="feature-index">Format 04</span>
-          <h3>Mystery Boxen</h3>
-          <p>Box für Box entstehen neue SRH Insights, Geschichten und Brand Messages mit spielerischem Reveal.</p>
-          <div class="mode-preview-list">
-            <span class="status-pill">Insights</span>
-            <span class="status-pill">Reveal</span>
-            <span class="status-pill">Touch</span>
-          </div>
-        </article>
-      </section>
-
-      <section class="landing-feature-grid">
-        <article class="glass-panel feature-card">
-          <span class="feature-index">01</span>
-          <h3>Stärkere Holding-Bühne</h3>
-          <p>Die Oberflaeche zahlt klar auf SRH als Dachmarke mit breitem Einsatzspektrum in Bildung und Gesundheit ein.</p>
-        </article>
-        <article class="glass-panel feature-card">
-          <span class="feature-index">02</span>
-          <h3>Beispiel-Sessions direkt integriert</h3>
-          <p>Questions, Memory, Glücksrad und Mystery Boxen lassen sich als Showcase direkt laden und anpassen.</p>
-        </article>
-        <article class="glass-panel feature-card">
-          <span class="feature-index">03</span>
-          <h3>Drei Modi, eine visuelle Sprache</h3>
-          <p>Player View, Admin und Startseite fühlen sich jetzt wie ein zusammenhängendes SRH Experience System an.</p>
-        </article>
       </section>
     </main>
   </div>
-  
+
   <script src="js/common.js"></script>
-  <script>document.addEventListener('DOMContentLoaded', () => initStars('stars'));</script>
+  <script>
+    function formatDate(value) {
+      const d = new Date(value);
+      if (Number.isNaN(d.getTime())) return 'unbekannt';
+      return d.toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' });
+    }
+
+    function esc(str) {
+      const d = document.createElement('div');
+      d.textContent = String(str ?? '');
+      return d.innerHTML;
+    }
+
+    function renderDashboard() {
+      const list = document.getElementById('dashboard-quiz-list');
+      if (!list) return;
+
+      const quizzes = QuizStore.all().sort((a, b) => {
+        const ta = new Date(a.updatedAt || a.createdAt || 0).getTime();
+        const tb = new Date(b.updatedAt || b.createdAt || 0).getTime();
+        return tb - ta;
+      });
+
+      if (!quizzes.length) {
+        list.innerHTML = `
+          <div class="saved-quizzes-empty" style="grid-column: 1 / -1;">
+            <strong>Noch keine Experience gespeichert.</strong>
+            <p>Erstelle im Admin-Bereich eine neue Session oder lade ein Beispiel.</p>
+            <a href="admin.html" class="btn btn-primary btn-sm" style="margin-top:0.5rem; display:inline-flex;">Zum Admin</a>
+          </div>
+        `;
+        return;
+      }
+
+      const modeLabels = { quiz: 'Questions', memory: 'Memory', wheel: 'Glücksrad', mystery: 'Mystery' };
+
+      list.innerHTML = quizzes.map(q => {
+        const modeLabel = modeLabels[q.mode] || q.mode;
+        return `
+          <article class="saved-quiz-card">
+            <div class="saved-quiz-head">
+              <div class="saved-quiz-copy">
+                <span class="status-pill status-soft">${esc(modeLabel)}</span>
+                <h3>${esc(q.title || 'Unbenannte Experience')}</h3>
+              </div>
+              <span class="saved-quiz-count">${q.questions?.length || 0} Einträge</span>
+            </div>
+            <div class="saved-quiz-stats">
+              <span class="status-pill">Gespeichert</span>
+              <span class="status-pill status-soft">${esc(formatDate(q.updatedAt || q.createdAt))}</span>
+            </div>
+            <div class="saved-quiz-actions">
+              <a href="admin.html" class="btn btn-secondary btn-sm" onclick="AdminStateStore.setCurrentQuizId('${q.id}')">Bearbeiten</a>
+              <a href="play.html" class="btn btn-primary btn-sm" onclick="activateAndPlay('${q.id}')">▶ Starten</a>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    function activateAndPlay(quizId) {
+      const quiz = QuizStore.get(quizId);
+      if (!quiz) return;
+      const game = {
+        code: 'GAME-' + Math.floor(Math.random() * 9999),
+        quizId: quiz.id,
+        mode: quiz.mode,
+        status: 'ready',
+        lastResult: null
+      };
+      GameStore.set(game.code, game);
+      ActiveGameStore.set(game.code);
+      AdminStateStore.setCurrentQuizId(quiz.id);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initStars('stars');
+      renderDashboard();
+    });
+  </script>
 </body>
 </html>

@@ -18,6 +18,7 @@
         <span>SRH Experience</span>
       </a>
       <div class="nav-links">
+        <a href="index.html" class="btn btn-ghost btn-sm">Dashboard</a>
         <a href="play.html" class="btn btn-primary btn-sm">▶ Spieleransicht</a>
       </div>
     </nav>
@@ -26,11 +27,8 @@
       <section class="admin-overview">
         <article class="glass-panel admin-hero">
           <span class="section-kicker">SRH Holding Studio</span>
-          <h1>SRH Experience vorbereiten</h1>
-          <p>
-            Konfiguriere eine holdingtaugliche Interaktion für SRH: Questions, Memory, Glücksrad oder Mystery Boxen.
-            Die Texte, Module und Beispiele sind auf SRH als starken Partner für Bildung und Gesundheit ausgerichtet und für Tablets optimiert.
-          </p>
+          <h1>Experience vorbereiten</h1>
+          <p>Wähle ein Format, pflege Inhalte und starte die Session direkt in der Player View.</p>
 
           <div class="admin-hero-metrics">
             <div class="metric-card compact">
@@ -49,39 +47,21 @@
         </article>
 
         <article class="glass-panel admin-flow">
-          <span class="section-kicker">Experience Flow</span>
-          <div class="flow-list">
-            <div class="flow-item">
-              <span class="mini-step">01</span>
-              <div>
-                <strong>Format wählen</strong>
-                <p>Wähle Questions, Memory, Glücksrad oder Mystery Boxen passend zum SRH Auftritt.</p>
-              </div>
-            </div>
-            <div class="flow-item">
-              <span class="mini-step">02</span>
-              <div>
-                <strong>Holding-Themen aufbereiten</strong>
-                <p>Werte, Impulse und Aussagen werden in ein interaktives Modul übersetzt.</p>
-              </div>
-            </div>
-            <div class="flow-item">
-              <span class="mini-step">03</span>
-              <div>
-                <strong>Direkt live gehen</strong>
-                <p>Nach dem Speichern startet die Session sofort in der Player View.</p>
-              </div>
-            </div>
-          </div>
+          <span class="section-kicker">Setup</span>
+          <ul class="quality-list">
+            <li>Titel und Format wählen</li>
+            <li>Module und Inhalte pflegen</li>
+            <li>Speichern und in Player View starten</li>
+          </ul>
         </article>
       </section>
 
       <section class="glass-panel example-session-panel">
         <div class="questions-toolbar">
           <div>
-            <span class="section-kicker">Beispiele</span>
-            <h2>Showcase-Module für SRH Holding</h2>
-            <p>Lade ein vorbereitetes Beispiel und passe es direkt an. So sind Questions, Memory, Glücksrad und Mystery Boxen sofort sichtbar.</p>
+            <span class="section-kicker">Schnellstart</span>
+            <h2>Beispiele laden</h2>
+            <p>Lade ein vorbereitetes Beispiel und passe es direkt an.</p>
           </div>
         </div>
 
@@ -89,22 +69,22 @@
           <button class="example-session-card" type="button" onclick="loadExampleSession('quiz')">
             <span class="feature-index">Questions</span>
             <strong>SRH Holding Questions</strong>
-            <p>Klassische Fragen mit Single- und Multi-Select für klare Botschaften und direkte Aktivierung.</p>
+            <p>Single- und Multi-Select für klare Botschaften und direkte Aktivierung.</p>
           </button>
           <button class="example-session-card" type="button" onclick="loadExampleSession('memory')">
             <span class="feature-index">Memory</span>
             <strong>Holding Pair Match</strong>
-            <p>Werte, Aussagen und Themen aus Bildung und Gesundheit als modernes Match-Spiel.</p>
+            <p>Werte, Aussagen und Themen als modernes Match-Spiel.</p>
           </button>
           <button class="example-session-card" type="button" onclick="loadExampleSession('wheel')">
             <span class="feature-index">Glücksrad</span>
             <strong>SRH Themenrad</strong>
-            <p>Ein Spin bringt einen Themenimpuls der Holding direkt in den Fokus.</p>
+            <p>Ein Spin bringt einen Themenimpuls direkt in den Fokus.</p>
           </button>
           <button class="example-session-card" type="button" onclick="loadExampleSession('mystery')">
             <span class="feature-index">Mystery</span>
             <strong>SRH Insight Boxen</strong>
-            <p>Reveal-Format für kurze Aha-Momente, Facts und Brand Messages.</p>
+            <p>Reveal-Format für kurze Aha-Momente und Brand Messages.</p>
           </button>
         </div>
       </section>
@@ -114,7 +94,7 @@
           <div>
             <span class="section-kicker">Bibliothek</span>
             <h2>Gespeicherte Experiences</h2>
-            <p id="saved-quizzes-copy">Gespeicherte Experiences können hier erneut geladen, angepasst und direkt wieder gestartet werden.</p>
+            <p id="saved-quizzes-copy">Gespeicherte Experiences können hier erneut geladen und gestartet werden.</p>
           </div>
 
           <div class="questions-toolbar-actions">
@@ -133,9 +113,9 @@
 
       <section class="admin-editor-grid">
         <article class="card admin-composer">
-          <span class="section-kicker">Setup</span>
-          <h2>Experience erstellen</h2>
-          <p class="form-help" id="admin-composer-copy">Wähle das passende Format für einen auffälligen SRH Holding Auftritt und bereite es direkt für den Screen vor.</p>
+          <span class="section-kicker">Neue Experience</span>
+          <h2>Erstellen</h2>
+          <p class="form-help" id="admin-composer-copy">Wähle das passende Format und gib einen Titel ein.</p>
 
           <div class="form-grid mt-2">
             <div class="form-group">
@@ -160,12 +140,11 @@
         </article>
 
         <aside class="card admin-side-note">
-          <span class="section-kicker">Qualität</span>
+          <span class="section-kicker">Hinweise</span>
           <ul class="quality-list">
-            <li>Holding-Themen breit denken: Bildung, Gesundheit, Werte, Verantwortung und Zukunft.</li>
-            <li>Kurze Aussagen sind auf Display und Event-Screen deutlich wirkungsvoller als lange Texte.</li>
-            <li>Eigene Eingabemasken für Questions, Memory, Wheel und Mystery halten die Inhalte schneller erfassbar.</li>
-            <li>Maximal sechs Einträge halten die Experience dynamisch, performant und auf Tablets sofort verständlich.</li>
+            <li>Halte Texte kurz – besonders für Tablets und Event-Screens.</li>
+            <li>Maximal 6 Einträge pro Experience für beste Performance.</li>
+            <li>Speichern startet die Session automatisch in der Player View.</li>
           </ul>
         </aside>
       </section>
@@ -175,7 +154,7 @@
           <div>
             <span class="section-kicker">Moduleditor</span>
             <h2 id="questions-panel-title">Module und Inhalte</h2>
-            <p id="questions-panel-copy">Die Inhalte werden passend zum gewählten SRH Experience Format in der Player View ausgespielt.</p>
+            <p id="questions-panel-copy">Die Inhalte werden passend zum gewählten Format in der Player View ausgespielt.</p>
           </div>
 
           <div class="questions-toolbar-actions">

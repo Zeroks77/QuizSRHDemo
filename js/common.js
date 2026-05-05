@@ -32,16 +32,20 @@ function canUseLocalStorage() {
   try {
     const testKey = '__srh_storage_probe__';
     localStorage.setItem(testKey, '1');
+    const result = localStorage.getItem(testKey);
     localStorage.removeItem(testKey);
-    return true;
+    return result === '1';
   } catch {
     return false;
   }
 }
 
 const StorageRuntime = (() => {
-  const windowStore = readWindowNameStore();
-  const hasLocalStorage = canUseLocalStorage();
+  let hasLocalStorage = canUseLocalStorage();
+
+  function getWindowStore() {
+    return readWindowNameStore();
+  }
 
   function getLocalValue(key) {
     if (!hasLocalStorage) return null;
@@ -53,7 +57,8 @@ const StorageRuntime = (() => {
   }
 
   function getFallbackValue(key) {
-    return Object.prototype.hasOwnProperty.call(windowStore, key) ? windowStore[key] : null;
+    const store = getWindowStore();
+    return Object.prototype.hasOwnProperty.call(store, key) ? store[key] : null;
   }
 
   return {
@@ -68,8 +73,9 @@ const StorageRuntime = (() => {
       return values;
     },
     setItem(key, value) {
-      windowStore[key] = value;
-      writeWindowNameStore(windowStore);
+      const store = getWindowStore();
+      store[key] = value;
+      writeWindowNameStore(store);
 
       if (!hasLocalStorage) return;
 
@@ -80,8 +86,9 @@ const StorageRuntime = (() => {
       }
     },
     removeItem(key) {
-      delete windowStore[key];
-      writeWindowNameStore(windowStore);
+      const store = getWindowStore();
+      delete store[key];
+      writeWindowNameStore(store);
 
       if (!hasLocalStorage) return;
 

@@ -2791,3 +2791,19 @@ select option {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+/* ---------- Dashboard additions ---------- */
+.example-session-card {
+  text-decoration: none;
+}
+
+.saved-quiz-actions a {
+  text-decoration: none;
+}
+
+#dashboard-panel {
+  margin-top: 1rem;
+}
+
+#dashboard-panel .saved-quizzes-list {
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
