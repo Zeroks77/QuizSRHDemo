@@ -18,6 +18,16 @@ const MEMORY_TIME_PER_PAIR = 8;
 const QUIZ_BASE_TIME = 18;
 const QUIZ_MULTI_TIME = 26;
 
+function getTimerConfig() {
+  const mode = currentGame?.timerMode || 'auto';
+  if (mode === 'off') return { enabled: false, seconds: 0 };
+  if (mode === 'custom') {
+    const seconds = Number(currentGame?.timerSeconds) || 30;
+    return { enabled: true, seconds: Math.max(5, Math.min(300, seconds)) };
+  }
+  return { enabled: true, seconds: null };
+}
+
 const MODE_META = {
   quiz: {
     modeLabel: 'Questions',
@@ -259,6 +269,9 @@ function isMultiAnswerQuestion(question) {
 }
 
 function getQuizTimeLimit(question) {
+  const config = getTimerConfig();
+  if (!config.enabled) return 0;
+  if (config.seconds !== null) return config.seconds;
   if (Number(question?.timeLimit) > 0) return Number(question.timeLimit);
   return isMultiAnswerQuestion(question) ? QUIZ_MULTI_TIME : QUIZ_BASE_TIME;
 }
@@ -306,12 +319,15 @@ function renderQuestionStage() {
     feedback.classList.remove('is-correct', 'is-wrong');
   }
 
+  const config = getTimerConfig();
+  const timerLabel = config.enabled ? (config.seconds !== null ? `${config.seconds}s` : 'Auto') : 'Kein Timer';
+
   setText('quiz-stage-title', quizData?.title || 'SRH Holding Questions');
-  setText('quiz-stage-description', 'Klare Fragen mit Single- und Multi-Select direkt auf dem Screen. Ideal für Eventflächen, Touchpoints und schnelle Aktivierung.');
+  setText('quiz-stage-description', quizData?.description || 'Klare Fragen mit Single- und Multi-Select direkt auf dem Screen. Ideal für Eventflächen, Touchpoints und schnelle Aktivierung.');
   setText('quiz-progress-count', `${state.currentIndex + 1} / ${state.questions.length}`);
   setText('quiz-correct-count', String(correctAnswers));
   setText('quiz-answer-mode', isMulti ? 'Multi Select' : 'Single Select');
-  setText('quiz-topic-label', isMulti ? 'Mehrere Antworten richtig' : 'Eine Antwort richtig');
+  setText('quiz-topic-label', `${isMulti ? 'Mehrere Antworten richtig' : 'Eine Antwort richtig'} · ${timerLabel}`);
   setText('quiz-question-text', question.text);
   setText('quiz-question-note', isMulti
     ? 'Markiere alle passenden Antworten und tippe dann auf Antwort prüfen.'
@@ -324,6 +340,7 @@ function renderQuestionStage() {
 
   renderQuestionAnswers(question);
   updateQuizSubmitButton(question);
+  updateQuizNextButton();
 
   clearInterval(timerInterval);
   clearTimeout(autoAdvanceTimeout);
@@ -405,6 +422,8 @@ function startQuizTimer(seconds) {
   timeLeft = seconds;
   updateQuizTimerDisplay();
 
+  if (seconds <= 0) return;
+
   timerInterval = setInterval(() => {
     timeLeft -= 1;
     updateQuizTimerDisplay();
@@ -419,15 +438,26 @@ function startQuizTimer(seconds) {
 function updateQuizTimerDisplay() {
   const display = document.getElementById('quiz-timer-display');
   const ring = document.getElementById('quiz-timer-ring');
+  const config = getTimerConfig();
+
   if (display) {
-    display.textContent = String(Math.max(timeLeft, 0));
-    display.classList.toggle('urgent', timeLeft <= 5);
+    if (config.enabled) {
+      display.textContent = String(Math.max(timeLeft, 0));
+      display.classList.toggle('urgent', timeLeft <= 5);
+    } else {
+      display.textContent = '∞';
+      display.classList.remove('urgent');
+    }
   }
 
   if (ring) {
-    const circumference = 2 * Math.PI * 45;
-    const offset = circumference - (Math.max(timeLeft, 0) / Math.max(currentTotalTime, 1)) * circumference;
-    ring.style.strokeDashoffset = offset;
+    if (config.enabled && currentTotalTime > 0) {
+      const circumference = 2 * Math.PI * 45;
+      const offset = circumference - (Math.max(timeLeft, 0) / Math.max(currentTotalTime, 1)) * circumference;
+      ring.style.strokeDashoffset = offset;
+    } else {
+      ring.style.strokeDashoffset = 0;
+    }
   }
 }
 
@@ -465,20 +495,36 @@ function submitQuizSelection(timedOut = false) {
   setText('quiz-correct-count', String(correctAnswers));
   showQuizFeedback(question, isCorrect, timedOut);
   updateQuizSubmitButton(question);
+  updateQuizNextButton();
+}
+
+function updateQuizNextButton() {
+  const button = document.getElementById('quiz-next-btn');
+  const state = currentGame?.modeState;
+  if (!button || !state) return;
 
   const isLast = state.currentIndex >= state.questions.length - 1;
-  autoAdvanceTimeout = setTimeout(() => {
-    if (isLast) {
-      finishExperience();
-      return;
-    }
+  button.classList.toggle('hidden', !state.answered);
+  button.textContent = isLast ? 'Zum Abschluss →' : 'Weiter zur nächsten Frage →';
+}
 
-    state.currentIndex += 1;
-    state.selectedIndexes = [];
-    state.answered = false;
-    saveGameState();
-    renderQuestionStage();
-  }, isCorrect ? 1350 : 1800);
+function advanceToNextQuestion() {
+  const state = currentGame?.modeState;
+  if (!state || !state.answered) return;
+
+  clearTimeout(autoAdvanceTimeout);
+
+  const isLast = state.currentIndex >= state.questions.length - 1;
+  if (isLast) {
+    finishExperience();
+    return;
+  }
+
+  state.currentIndex += 1;
+  state.selectedIndexes = [];
+  state.answered = false;
+  saveGameState();
+  renderQuestionStage();
 }
 
 function showQuizFeedback(question, isCorrect, timedOut) {
@@ -972,13 +1018,24 @@ function handleWheelWinner(winner) {
 function buildMysteryBoxes(quiz) {
   if (!quiz?.questions) return [];
 
-  const accents = ['#ff6a1a', '#4db5d8', '#3ad37e', '#ffbc5e', '#84d9ef', '#ff8f6b'];
+  const accents = [
+    { bg: '#ff6a1a', glow: 'rgba(255,106,26,0.35)', soft: '#ffb37e' },
+    { bg: '#4db5d8', glow: 'rgba(77,181,216,0.35)', soft: '#84d9ef' },
+    { bg: '#3ad37e', glow: 'rgba(58,211,126,0.35)', soft: '#74f2b0' },
+    { bg: '#ffbc5e', glow: 'rgba(255,188,94,0.35)', soft: '#ffe4b5' },
+    { bg: '#84d9ef', glow: 'rgba(132,217,239,0.35)', soft: '#b8ecfa' },
+    { bg: '#ff8f6b', glow: 'rgba(255,143,107,0.35)', soft: '#ffcbb8' }
+  ];
+  const icons = ['✦', '◆', '▲', '●', '■', '★'];
+
   return quiz.questions.slice(0, 6).map((question, index) => ({
     id: `box-${index + 1}`,
     title: getFieldText(question, ['title', 'text', 'prompt']) || `Insight ${index + 1}`,
-    teaser: getFieldText(question, ['teaser']) || 'Tippen zum Öffnen',
+    teaser: getFieldText(question, ['teaser']) || 'Zum Öffnen tippen',
     reveal: getFieldText(question, ['reveal']) || getCorrectText(question),
-    tone: accents[index % accents.length]
+    tone: accents[index % accents.length],
+    icon: icons[index % icons.length],
+    index: index + 1
   }));
 }
 
@@ -1011,44 +1068,105 @@ function renderMysteryScreen() {
   setText('mystery-open-count', String(state.openedIds.length));
   setText('mystery-total-count', String(state.boxes.length));
 
-  grid.innerHTML = state.boxes.map((box, index) => {
+  const allOpen = state.openedIds.length === state.boxes.length;
+
+  grid.innerHTML = state.boxes.map((box) => {
     const isOpen = state.openedIds.includes(box.id);
+    const tone = box.tone;
     return `
-      <button class="mystery-card ${isOpen ? 'is-open' : ''}"
-              type="button"
-              data-box-id="${box.id}"
-              style="--mystery-accent:${box.tone}"
-              onclick="openMysteryBox('${box.id}')">
-        <span class="feature-index">Box ${index + 1}</span>
-        <strong>${esc(box.title)}</strong>
-        <p>${esc(isOpen ? box.reveal : box.teaser)}</p>
-        <span class="mystery-card-state">${isOpen ? 'Geöffnet' : 'Reveal starten'}</span>
-      </button>
+      <div class="mystery-card ${isOpen ? 'is-open' : ''} ${allOpen ? 'all-revealed' : ''}"
+           data-box-id="${box.id}"
+           style="--mystery-bg:${tone.bg};--mystery-glow:${tone.glow};--mystery-soft:${tone.soft}">
+        <button class="mystery-card-btn"
+                type="button"
+                onclick="openMysteryBox('${box.id}')"
+                ${isOpen ? 'disabled' : ''}>
+
+          <!-- DECKEL (oben, klappt beim Öffnen weg) -->
+          <div class="mystery-lid">
+            <div class="mystery-lid-bar"></div>
+            <span class="mystery-lid-icon">${box.icon}</span>
+            <span class="mystery-lid-number">${String(box.index).padStart(2, '0')}</span>
+          </div>
+
+          <!-- BOX KÖRPER -->
+          <div class="mystery-body">
+            <!-- Geschlossen: Titel + Teaser -->
+            <div class="mystery-body-closed">
+              <strong>${esc(box.title)}</strong>
+              <p>${esc(box.teaser)}</p>
+            </div>
+
+            <!-- Geöffnet: Reveal -->
+            <div class="mystery-body-open">
+              <span class="mystery-open-label">${esc(box.title)}</span>
+              <p class="mystery-open-reveal">${esc(box.reveal)}</p>
+              <span class="mystery-open-badge">Geöffnet</span>
+            </div>
+          </div>
+
+          <!-- SCHLOSS -->
+          <div class="mystery-lock">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <span>Tippen zum Öffnen</span>
+          </div>
+        </button>
+      </div>
     `;
   }).join('');
+
+  renderMysteryProgress(state);
+}
+
+function renderMysteryProgress(state) {
+  const container = document.getElementById('mystery-progress');
+  if (!container) return;
+  const total = state.boxes.length;
+  const opened = state.openedIds.length;
+  const pct = total > 0 ? (opened / total) * 100 : 0;
+  container.innerHTML = `
+    <div class="mystery-progress-track">
+      <div class="mystery-progress-fill" style="width:${pct}%"></div>
+    </div>
+    <span class="mystery-progress-text">${opened} / ${total} Boxen geöffnet</span>
+  `;
 }
 
 function openMysteryBox(boxId) {
   const state = currentGame?.modeState;
   if (!state || state.openedIds.includes(boxId)) return;
 
-  state.openedIds.push(boxId);
-  saveGameState();
-  renderMysteryScreen();
-  SoundFX?.match?.();
-
+  const wrap = document.querySelector(`.mystery-box-wrap[data-box-id="${boxId}"]`);
   const box = state.boxes.find((entry) => entry.id === boxId);
-  const element = document.querySelector(`[data-box-id="${boxId}"]`);
-  if (element) {
-    element.classList.add('is-opening');
-    setTimeout(() => element.classList.remove('is-opening'), 760);
 
-    const rect = element.getBoundingClientRect();
-    createParticles(rect.left + rect.width / 2, rect.top + rect.height / 2, box?.tone || '#ff6a1a', 16);
-  }
+  if (wrap) {
+    // Animation starten
+    wrap.classList.add('is-opening');
+    SoundFX?.match?.();
 
-  if (state.openedIds.length === state.boxes.length) {
-    setTimeout(finishExperience, 900);
+    // Partikel aus der Mitte der Box
+    const rect = wrap.getBoundingClientRect();
+    createParticles(rect.left + rect.width / 2, rect.top + rect.height / 2, box?.tone?.bg || '#ff6a1a', 30);
+
+    // Nach Animation: State aktualisieren und neu rendern
+    setTimeout(() => {
+      state.openedIds.push(boxId);
+      saveGameState();
+      renderMysteryScreen();
+
+      // Wenn alle offen: Konfetti + Finish
+      if (state.openedIds.length === state.boxes.length) {
+        celebrate({ y: 0.5 });
+        setTimeout(finishExperience, 2000);
+      }
+    }, 900);
+  } else {
+    state.openedIds.push(boxId);
+    saveGameState();
+    renderMysteryScreen();
   }
 }
 

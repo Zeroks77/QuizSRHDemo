@@ -16,7 +16,7 @@
 
     <nav class="navbar">
       <a href="index.html" class="logo logo-link">
-        <span class="logo-orb"></span>
+        <img src="logo/SRH_Logo_sRGB_Orange_150dpi.png" alt="SRH Logo" class="logo-img" />
         <span>SRH Experience</span>
       </a>
       <div class="nav-links">
@@ -75,6 +75,7 @@
 
             <div class="quiz-action-row">
               <button id="quiz-submit-btn" class="btn btn-primary btn-lg hidden" type="button" onclick="submitQuizSelection()">Antwort pruefen</button>
+              <button id="quiz-next-btn" class="btn btn-success btn-lg hidden" type="button" onclick="advanceToNextQuestion()">Weiter zur nächsten Frage →</button>
             </div>
           </div>
         </section>
@@ -213,6 +214,7 @@
             </div>
           </div>
 
+          <div id="mystery-progress" class="mystery-progress"></div>
           <div id="mystery-grid" class="mystery-grid"></div>
         </section>
       </div>
@@ -222,6 +224,9 @@
       <div class="container start-screen">
         <section class="start-layout">
           <article class="glass-panel start-hero-panel">
+            <div class="start-logo-wrap">
+              <img src="logo/SRH_Logo_sRGB_Orange_150dpi.png" alt="SRH Logo" class="start-logo-img" />
+            </div>
             <span class="section-kicker" id="start-kicker">Player View</span>
             <h1 id="start-title">SRH Experience</h1>
             <p id="start-description">Bereit für den nächsten Holding-Auftritt auf Display und Touchscreen.</p>

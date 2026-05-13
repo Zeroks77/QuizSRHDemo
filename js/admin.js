@@ -83,7 +83,10 @@ function normalizeQuizRecord(quiz = {}) {
   return {
     id: quiz.id || uuidv4(),
     title: String(quiz.title || '').trim(),
+    description: String(quiz.description || '').trim(),
     mode,
+    timerMode: quiz.timerMode || 'auto',
+    timerSeconds: Number(quiz.timerSeconds) || 30,
     questions: questions.map((item) => normalizeItem(item, mode)),
     createdAt: quiz.createdAt || new Date().toISOString(),
     updatedAt: quiz.updatedAt || quiz.createdAt || new Date().toISOString()
@@ -99,10 +102,16 @@ function getCurrentQuizSnapshot() {
   if (!currentQuiz) return null;
 
   const mode = getSelectedMode();
+  const timerMode = document.getElementById('quiz-timer-mode')?.value || 'auto';
+  const timerSeconds = Number(document.getElementById('quiz-timer-seconds')?.value) || 30;
+
   return {
     ...currentQuiz,
     title: document.getElementById('quiz-title')?.value.trim() || currentQuiz.title || '',
+    description: document.getElementById('quiz-description')?.value.trim() || currentQuiz.description || '',
     mode,
+    timerMode,
+    timerSeconds,
     questions: (currentQuiz.questions || []).map((item) => normalizeItem(item, mode))
   };
 }
@@ -128,6 +137,18 @@ function populateEditor(quiz) {
   document.getElementById('quiz-title').value = currentQuiz.title;
   document.getElementById('quiz-mode').value = currentQuiz.mode;
 
+  const descEl = document.getElementById('quiz-description');
+  if (descEl) descEl.value = currentQuiz.description || '';
+
+  const timerMode = currentQuiz.timerMode || 'auto';
+  const timerModeEl = document.getElementById('quiz-timer-mode');
+  if (timerModeEl) timerModeEl.value = timerMode;
+
+  const timerSeconds = currentQuiz.timerSeconds || 30;
+  const timerSecondsEl = document.getElementById('quiz-timer-seconds');
+  if (timerSecondsEl) timerSecondsEl.value = timerSeconds;
+
+  updateTimerConfig();
   showQuestionsSection(true);
   updateEditorModeText();
   renderQuestions();
@@ -340,18 +361,27 @@ function restoreAdminSession() {
 
 function bindAdminInputListeners() {
   const titleInput = document.getElementById('quiz-title');
-  if (!titleInput) return;
+  const descInput = document.getElementById('quiz-description');
 
-  titleInput.addEventListener('input', () => {
-    if (!currentQuiz) {
-      updateAdminInsights();
-      return;
-    }
+  if (titleInput) {
+    titleInput.addEventListener('input', () => {
+      if (!currentQuiz) {
+        updateAdminInsights();
+        return;
+      }
+      currentQuiz.title = titleInput.value;
+      persistAdminDraft();
+      renderSavedQuizzes();
+    });
+  }
 
-    currentQuiz.title = titleInput.value;
-    persistAdminDraft();
-    renderSavedQuizzes();
-  });
+  if (descInput) {
+    descInput.addEventListener('input', () => {
+      if (!currentQuiz) return;
+      currentQuiz.description = descInput.value;
+      persistAdminDraft();
+    });
+  }
 }
 
 function sanitizeFilenamePart(value, fallback = 'experience') {
@@ -716,12 +746,35 @@ function updateMode() {
     currentQuiz.questions = currentQuiz.questions.map((item) => normalizeItem(item, mode));
     persistAdminDraft();
   }
+  updateTimerConfig();
   updateEditorModeText();
   if (currentQuiz) {
     renderQuestions();
     renderSavedQuizzes();
   }
   else updateAdminInsights();
+}
+
+function updateTimerConfig() {
+  const mode = getSelectedMode();
+  const timerModeEl = document.getElementById('quiz-timer-mode');
+  const timerConfigGroup = document.getElementById('timer-config-group');
+  const timerCustomGroup = document.getElementById('timer-custom-group');
+
+  if (timerConfigGroup) {
+    timerConfigGroup.classList.toggle('hidden', mode !== 'quiz');
+  }
+
+  const timerMode = timerModeEl?.value || 'auto';
+  if (timerCustomGroup) {
+    timerCustomGroup.classList.toggle('hidden', mode !== 'quiz' || timerMode !== 'custom');
+  }
+
+  if (currentQuiz) {
+    currentQuiz.timerMode = timerMode;
+    currentQuiz.timerSeconds = Number(document.getElementById('quiz-timer-seconds')?.value) || 30;
+    persistAdminDraft();
+  }
 }
 
 function createQuiz() {
@@ -1119,6 +1172,8 @@ function saveQuiz() {
     code: 'GAME-' + Math.floor(Math.random() * 9999),
     quizId: currentQuiz.id,
     mode: currentQuiz.mode,
+    timerMode: currentQuiz.timerMode || 'auto',
+    timerSeconds: currentQuiz.timerSeconds || 30,
     status: 'ready',
     lastResult: null
   };
@@ -1170,7 +1225,32 @@ function updateAdminInsights(isReady = false) {
 document.addEventListener('DOMContentLoaded', () => {
   initStars('stars');
   bindAdminInputListeners();
+  bindTimerInputListeners();
   updateStorageNotice();
   renderSavedQuizzes();
-  if (!restoreAdminSession()) updateEditorModeText();
+  if (!restoreAdminSession()) {
+    updateEditorModeText();
+    updateTimerConfig();
+  }
 });
+
+function bindTimerInputListeners() {
+  const timerModeEl = document.getElementById('quiz-timer-mode');
+  const timerSecondsEl = document.getElementById('quiz-timer-seconds');
+
+  if (timerModeEl) {
+    timerModeEl.addEventListener('change', () => {
+      updateTimerConfig();
+      if (currentQuiz) persistAdminDraft();
+    });
+  }
+
+  if (timerSecondsEl) {
+    timerSecondsEl.addEventListener('input', () => {
+      if (currentQuiz) {
+        currentQuiz.timerSeconds = Number(timerSecondsEl.value) || 30;
+        persistAdminDraft();
+      }
+    });
+  }
+}

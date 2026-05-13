@@ -14,7 +14,7 @@
   <div class="admin-shell">
     <nav class="navbar">
       <a href="index.html" class="logo logo-link">
-        <span class="logo-orb"></span>
+        <img src="logo/SRH_Logo_sRGB_Orange_150dpi.png" alt="SRH Logo" class="logo-img" />
         <span>SRH Experience</span>
       </a>
       <div class="nav-links">
@@ -123,6 +123,11 @@
               <input type="text" id="quiz-title" placeholder="z.B. SRH Holding Brand Experience" />
             </div>
 
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label class="form-label" for="quiz-description">Beschreibung <span style="color:var(--muted);font-size:0.85em;">– wird in der Player View unter dem Titel angezeigt</span></label>
+              <input type="text" id="quiz-description" placeholder="z.B. Klare Fragen mit Single- und Multi-Select direkt auf dem Screen." />
+            </div>
+
             <div class="form-group">
               <label class="form-label" for="quiz-mode">Modus</label>
               <select id="quiz-mode" onchange="updateMode()">
@@ -131,6 +136,20 @@
                 <option value="wheel">Glücksrad</option>
                 <option value="mystery">Mystery Boxen</option>
               </select>
+            </div>
+
+            <div class="form-group" id="timer-config-group">
+              <label class="form-label" for="quiz-timer-mode">Timer</label>
+              <select id="quiz-timer-mode" onchange="updateTimerConfig()">
+                <option value="auto" selected>Automatisch (Single 18s / Multi 26s)</option>
+                <option value="custom">Eigene Zeit pro Frage</option>
+                <option value="off">Timer deaktiviert</option>
+              </select>
+            </div>
+
+            <div class="form-group hidden" id="timer-custom-group">
+              <label class="form-label" for="quiz-timer-seconds">Sekunden pro Frage</label>
+              <input type="number" id="quiz-timer-seconds" min="5" max="300" value="30" />
             </div>
           </div>
 

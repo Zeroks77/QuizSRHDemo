@@ -824,6 +824,13 @@ select option {
   box-shadow: 0 0 0 5px rgba(255, 106, 26, 0.12), 0 0 22px rgba(255, 106, 26, 0.42);
 }
 
+.logo-img {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
 .nav-links {
   display: flex;
   gap: 0.75rem;
@@ -1652,7 +1659,6 @@ select option {
 }
 
 .memory-card,
-.mystery-card,
 .sound-toggle,
 .btn {
   touch-action: manipulation;
@@ -1782,8 +1788,7 @@ select option {
 }
 
 .experience-gallery,
-.example-session-grid,
-.mystery-grid {
+.example-session-grid {
   display: grid;
   gap: 1rem;
 }
@@ -1813,8 +1818,7 @@ select option {
 
 .experience-mode-card::after,
 .example-session-card::after,
-.wheel-result-card::after,
-.mystery-card::after {
+.wheel-result-card::after {
   content: '';
   position: absolute;
   inset: auto -12% -36% 48%;
@@ -1824,8 +1828,7 @@ select option {
 }
 
 .experience-mode-card h3,
-.example-session-card strong,
-.mystery-card strong {
+.example-session-card strong {
   font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
   font-size: 1.35rem;
   line-height: 1.02;
@@ -1835,7 +1838,6 @@ select option {
 .example-session-card p,
 .wheel-result-card p,
 .wheel-segment-item p,
-.mystery-card p,
 .mode-stage-copy p {
   color: var(--primary-light);
 }
@@ -2200,85 +2202,7 @@ select option {
   opacity: 0.72;
 }
 
-.mystery-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
 
-.mystery-card {
-  position: relative;
-  min-height: clamp(168px, 18vw, 210px);
-  padding: 1rem;
-  border-radius: 26px;
-  border: 1px solid rgba(152, 193, 215, 0.14);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  color: var(--text);
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-  transition: transform 0.28s ease, border-color 0.28s ease, box-shadow 0.28s ease, background 0.28s ease;
-  contain: layout paint;
-}
-
-.mystery-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(255, 106, 26, 0.24);
-}
-
-.mystery-card.is-open {
-  border-color: rgba(58, 211, 126, 0.3);
-  background: linear-gradient(180deg, rgba(58, 211, 126, 0.12), rgba(255, 255, 255, 0.03));
-  box-shadow: 0 18px 42px rgba(11, 37, 28, 0.26);
-}
-
-.mystery-card.is-opening {
-  animation: mystery-box-pulse 0.72s var(--ease-bounce);
-}
-
-@keyframes mystery-box-pulse {
-  0% {
-    transform: scale(1);
-  }
-  45% {
-    transform: scale(0.98);
-  }
-  100% {
-    transform: scale(1.03);
-  }
-}
-
-.mystery-card p {
-  font-size: clamp(0.92rem, 1.1vw, 1rem);
-  line-height: 1.34;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.mystery-card-state {
-  margin-top: auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  align-self: flex-start;
-  padding: 0.5rem 0.82rem;
-  border-radius: 999px;
-  border: 1px solid rgba(152, 193, 215, 0.16);
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--primary-light);
-  font-size: 0.78rem;
-  line-height: 1;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-}
-
-.mystery-card.is-open .mystery-card-state {
-  border-color: rgba(58, 211, 126, 0.28);
-  background: rgba(58, 211, 126, 0.12);
-  color: #ceffe1;
-}
 
 .toast.info {
   border-color: rgba(132, 217, 239, 0.22);
@@ -2324,9 +2248,7 @@ select option {
     grid-template-columns: 1fr;
   }
 
-  .mystery-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+
 
   .memory-header {
     min-width: 0;
@@ -2350,8 +2272,7 @@ select option {
   .editor-split-grid,
   .answers-grid,
   .quiz-answer-grid,
-  .showcase-grid,
-  .mystery-grid {
+  .showcase-grid {
     grid-template-columns: 1fr;
   }
 
@@ -2442,7 +2363,6 @@ select option {
   .memory-card:not(.flipped):not(.matched):hover .memory-card-inner,
   .memory-card:not(.flipped):not(.matched):active .memory-card-inner,
   .memory-card.flipped:hover .memory-card-inner,
-  .mystery-card:hover,
   .example-session-card:hover,
   .quiz-answer-card.is-selected {
     transform: none;
@@ -2459,8 +2379,7 @@ select option {
   .quiz-answer-card,
   .wheel-canvas-shell,
   .wheel-result-card,
-  .wheel-focus-overlay,
-  .mystery-card {
+  .wheel-focus-overlay {
     transition: none;
     animation: none;
   }
@@ -2481,7 +2400,6 @@ select option {
 .wheel-focus-overlay p,
 .quiz-question-card h2,
 .quiz-question-note,
-.mystery-card p,
 .feature-card p,
 .band-card h2 {
   overflow-wrap: anywhere;
@@ -2640,7 +2558,6 @@ select option {
   }
 
   .wheel-segment-item,
-  .mystery-card,
   .answer-item {
     border-radius: 20px;
   }
@@ -2763,7 +2680,6 @@ select option {
 
   .wheel-focus-overlay p,
   .wheel-result-note,
-  .mystery-card p,
   .feature-card p,
   .preview-step p,
   .mini-preview-row p {
@@ -2798,6 +2714,401 @@ select option {
 
 .saved-quiz-actions a {
   text-decoration: none;
+}
+
+/* ---------- Logo additions ---------- */
+.logo-img {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.start-logo-wrap {
+  margin-bottom: 1rem;
+}
+
+.start-logo-img {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+}
+
+/* ---------- Quiz action row with next button ---------- */
+.quiz-action-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+#quiz-next-btn {
+  animation: nextBtnIn 0.4s var(--ease-bounce);
+}
+
+@keyframes nextBtnIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ============================================================
+   MYSTERY BOXES – Flat Design with Opening Lid
+   ============================================================ */
+
+.mystery-screen {
+  padding: 2.2rem 0 4rem;
+}
+
+/* ---- Progress Bar ---- */
+.mystery-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.6rem 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.mystery-progress-track {
+  flex: 1;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.mystery-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--grad-success);
+  transition: width 0.6s var(--ease-bounce);
+  box-shadow: 0 0 12px rgba(58, 211, 126, 0.35);
+}
+
+.mystery-progress-text {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* ---- Grid ---- */
+.mystery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.2rem;
+  padding: 0.4rem;
+}
+
+/* ---- Card Container ---- */
+.mystery-card {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(10, 30, 46, 0.95), rgba(5, 18, 30, 0.98));
+  border: 1px solid rgba(152, 193, 215, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: transform 0.35s var(--ease-bounce), box-shadow 0.35s ease;
+}
+
+.mystery-card:not(.is-open):hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 30px var(--mystery-glow);
+  border-color: var(--mystery-bg);
+}
+
+/* ---- Button inside card ---- */
+.mystery-card-btn {
+  position: relative;
+  width: 100%;
+  min-height: clamp(200px, 18vw, 260px);
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  color: inherit;
+  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.mystery-card-btn:disabled {
+  cursor: default;
+}
+
+/* ---- LID (top section) ---- */
+.mystery-lid {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.2rem;
+  background: linear-gradient(180deg, rgba(18, 44, 64, 0.9), rgba(10, 30, 46, 0.95));
+  border-bottom: 2px solid var(--mystery-bg);
+  z-index: 2;
+  transition: all 0.5s var(--ease-bounce);
+}
+
+.mystery-lid-bar {
+  position: absolute;
+  bottom: -2px;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--mystery-soft), transparent);
+  opacity: 0.5;
+}
+
+.mystery-lid-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--mystery-bg), var(--mystery-soft));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 16px var(--mystery-glow);
+  transition: transform 0.3s ease;
+}
+
+.mystery-card:not(.is-open):hover .mystery-lid-icon {
+  transform: scale(1.1);
+}
+
+.mystery-lid-number {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+}
+
+/* ---- BODY (main content area) ---- */
+.mystery-body {
+  position: relative;
+  flex: 1;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+}
+
+/* Closed state content */
+.mystery-body-closed {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: opacity 0.3s ease;
+}
+
+.mystery-body-closed strong {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.2rem;
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.mystery-body-closed p {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: var(--muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Open state content */
+.mystery-body-open {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.2rem;
+  gap: 0.7rem;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: all 0.5s var(--ease-bounce) 0.15s;
+  pointer-events: none;
+}
+
+.mystery-open-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+.mystery-open-reveal {
+  font-size: clamp(1rem, 1.3vw, 1.2rem);
+  line-height: 1.5;
+  color: var(--primary-light);
+  font-weight: 500;
+}
+
+.mystery-open-badge {
+  margin-top: 0.4rem;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(58, 211, 126, 0.3);
+  background: rgba(58, 211, 126, 0.1);
+  color: #74f2b0;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+}
+
+/* ---- LOCK indicator ---- */
+.mystery-lock {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(152, 193, 215, 0.1);
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 0.3s ease;
+  z-index: 3;
+}
+
+.mystery-lock svg {
+  width: 14px;
+  height: 14px;
+  color: var(--mystery-soft);
+}
+
+.mystery-card:not(.is-open):hover .mystery-lock {
+  border-color: var(--mystery-bg);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 16px var(--mystery-glow);
+}
+
+/* ========================================
+   OPEN STATE
+   ======================================== */
+
+/* Lid slides up and fades */
+.mystery-card.is-open .mystery-lid {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+
+/* Closed content fades out */
+.mystery-card.is-open .mystery-body-closed {
+  opacity: 0;
+}
+
+/* Lock disappears */
+.mystery-card.is-open .mystery-lock {
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all 0.3s ease;
+}
+
+/* Open content slides in */
+.mystery-card.is-open .mystery-body-open {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Card glows green when open */
+.mystery-card.is-open {
+  border-color: rgba(58, 211, 126, 0.2);
+  box-shadow: 0 12px 40px rgba(11, 37, 28, 0.25);
+}
+
+/* ========================================
+   OPENING ANIMATION (click)
+   ======================================== */
+
+.mystery-card.is-opening {
+  animation: boxShake 0.5s ease;
+}
+
+.mystery-card.is-opening .mystery-lid {
+  animation: lidShake 0.5s ease;
+}
+
+.mystery-card.is-opening .mystery-lock {
+  animation: lockPop 0.4s ease;
+}
+
+@keyframes boxShake {
+  0%, 100% { transform: translateX(0); }
+  15%      { transform: translateX(-5px) rotate(-1deg); }
+  30%      { transform: translateX(5px) rotate(1deg); }
+  45%      { transform: translateX(-3px); }
+  60%      { transform: translateX(3px); }
+  75%      { transform: translateX(-1px); }
+}
+
+@keyframes lidShake {
+  0%, 100% { transform: translateY(0); }
+  20%      { transform: translateY(-4px); }
+  40%      { transform: translateY(2px); }
+  60%      { transform: translateY(-3px); }
+  80%      { transform: translateY(1px); }
+}
+
+@keyframes lockPop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.2); }
+  100% { transform: scale(0); opacity: 0; }
+}
+
+/* ========================================
+   ALL REVEALED
+   ======================================== */
+
+.mystery-card.all-revealed.is-open {
+  animation: allRevealedPulse 0.7s var(--ease-bounce) 0.1s both;
+}
+
+@keyframes allRevealedPulse {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.03); }
+  70%  { transform: scale(0.99); }
+  100% { transform: scale(1); }
+}
+
+/* ========================================
+   Responsive
+   ======================================== */
+
+@media (max-width: 900px) {
+  .mystery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .mystery-grid {
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+  }
 }
 
 #dashboard-panel {
